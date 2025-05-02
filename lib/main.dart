@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/screens/main_page.dart';
+import 'package:recipe_book/screens/recipe_detail_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,12 +13,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Recipe Book',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MainPageWidget(),
+      home: RecipeDetailPage(),
     );
   }
 }
