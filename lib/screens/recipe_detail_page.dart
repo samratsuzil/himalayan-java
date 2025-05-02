@@ -17,7 +17,7 @@ class RecipeDetailPage extends StatelessWidget {
                   bottomRight: Radius.circular(24),
                 ),
                 child: Image.asset(
-                  'assets/images/pizza.jpg',
+                  'assets/images/pizza.webp',
                   width: double.infinity,
                   height: 260,
                   fit: BoxFit.cover,
@@ -63,7 +63,7 @@ class RecipeDetailPage extends StatelessWidget {
                     children: [
                       const Expanded(
                         child: Text(
-                          'Pizza Palace',
+                          'Capucinno',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 18,
@@ -110,19 +110,6 @@ class RecipeDetailPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Row(
-                    children: const [
-                      CircleAvatar(
-                        radius: 12,
-                        backgroundImage: AssetImage('assets/images/user.jpg'),
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        'Kadin Curtis',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 20),
                   const Text(
                     'Ingredients',
@@ -159,19 +146,58 @@ class RecipeDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'Description',
+                    'Procedures',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Handcrafted pizzas made with the freshest ingredients and baked to perfection. From classic Margherita to bold gourmet flavors, we serve a variety of mouthwatering options.',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      height: 1.4,
-                    ),
+                  const SizedBox(height: 12),
+                  ListView(
+                    // This next line does the trick.
+                    scrollDirection: Axis.horizontal,
+                    children: <Widget>[
+                      Container(width: 160, color: Colors.red),
+                      Container(width: 160, color: Colors.blue),
+                      Container(width: 160, color: Colors.green),
+                      Container(width: 160, color: Colors.yellow),
+                      Container(width: 160, color: Colors.orange),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      IngredientItem(
+                        iconPath: 'assets/images/p1.webp',
+                        title: 'Dough',
+                        subtitle: '1 Pet',
+                      ),
+                      IngredientItem(
+                        iconPath: 'assets/images/p2.webp',
+                        title: 'Sauce',
+                        subtitle: '5 Seeds',
+                      ),
+                      IngredientItem(
+                        iconPath: 'assets/images/p3.webp',
+                        title: 'Pepperoni',
+                        subtitle: '3 Seeds',
+                      ),
+                      IngredientItem(
+                        iconPath: 'assets/images/p4.webp',
+                        title: 'Cheese',
+                        subtitle: 'Enough',
+                      ),
+                      IngredientItem(
+                        iconPath: 'assets/images/p4.webp',
+                        title: 'Cheese',
+                        subtitle: 'Enough',
+                      ),
+                      IngredientItem(
+                        iconPath: 'assets/images/p4.webp',
+                        title: 'Cheese',
+                        subtitle: 'Enough',
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -192,7 +218,7 @@ class RecipeDetailPage extends StatelessWidget {
               ),
               icon: const Icon(Icons.play_circle_fill),
               label: const Text(
-                'Watch Videos',
+                'Watch Video',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
