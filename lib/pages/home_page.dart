@@ -113,34 +113,69 @@ class _HomePageState extends State<HomePage> {
                   : SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: categories
-                            .map(
-                              (cat) => Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() => selectedCategoryId = cat.id);
-                                    fetchRecipes(
-                                      categoryId: cat.id,
-                                      searchQuery: searchQuery,
-                                    );
-                                  },
-                                  child: Chip(
-                                    label: Text(cat.name),
-                                    backgroundColor:
-                                        selectedCategoryId == cat.id
-                                            ? Colors.teal[900]
-                                            : Colors.red[900],
-                                    labelStyle:
-                                        const TextStyle(color: Colors.white),
-                                  ),
-                                ),
+                        children: [
+                          // "All" Chip
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: ChoiceChip(
+                              label: const Text('All'),
+                              checkmarkColor:
+                                  Colors.white, // 👈 white tick icon
+
+                              selected: selectedCategoryId == null,
+                              selectedColor: Colors.teal[800],
+                              backgroundColor: Colors.grey[300],
+                              labelStyle: TextStyle(
+                                color: selectedCategoryId == null
+                                    ? Colors.white
+                                    : Colors.black87,
+                                fontWeight: FontWeight.w500,
                               ),
-                            )
-                            .toList(),
+                              onSelected: (_) {
+                                setState(() => selectedCategoryId = null);
+                                fetchRecipes(searchQuery: searchQuery);
+                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              elevation: 3,
+                              pressElevation: 6,
+                            ),
+                          ),
+                          ...categories.map(
+                            (cat) => Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: ChoiceChip(
+                                label: Text(cat.name),
+                                checkmarkColor:
+                                    Colors.white, // 👈 white tick icon
+                                selected: selectedCategoryId == cat.id,
+                                selectedColor: Colors.teal[800],
+                                backgroundColor: Colors.grey[300],
+                                labelStyle: TextStyle(
+                                  color: selectedCategoryId == cat.id
+                                      ? Colors.white
+                                      : Colors.black87,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                onSelected: (_) {
+                                  setState(() => selectedCategoryId = cat.id);
+                                  fetchRecipes(
+                                    categoryId: cat.id,
+                                    searchQuery: searchQuery,
+                                  );
+                                },
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                elevation: 3,
+                                pressElevation: 6,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-
               const SizedBox(height: 24),
 
               // Clear Search Button

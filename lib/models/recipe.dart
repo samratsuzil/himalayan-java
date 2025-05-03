@@ -1,4 +1,5 @@
 import 'ingredient_group.dart';
+import 'ingredient_item.dart';
 import 'procedure_group.dart';
 
 class Recipe {
@@ -7,7 +8,8 @@ class Recipe {
   final int calories;
   final String difficulty;
   final String videoUrl;
-  final List<IngredientGroup> ingredients;
+  final List<dynamic>
+      ingredients; // Can be either IngredientGroup or IngredientItem
   final List<ProcedureGroup> procedures;
   final String? featuredImage;
 
@@ -37,15 +39,25 @@ class Recipe {
     final ingredientsJson = acf['ingredients'] ?? [];
     final proceduresJson = acf['procedures'] ?? [];
 
+    // Dynamically parse ingredients as either IngredientGroup or IngredientItem
+    List<dynamic> parsedIngredients = [];
+    for (var ingredient in ingredientsJson) {
+      if (ingredient.containsKey('sub_ingredients')) {
+        // If it contains 'sub_ingredients', treat it as an IngredientGroup
+        parsedIngredients.add(IngredientGroup.fromJson(ingredient));
+      } else {
+        // Otherwise, treat it as a single IngredientItem
+        parsedIngredients.add(IngredientItem.fromJson(ingredient));
+      }
+    }
+
     return Recipe(
       name: info['recipe_name'] ?? '',
       servings: info['number_of_servings'] ?? 0,
       calories: info['recipe_calories'] ?? 0,
       difficulty: info['recipe_difficulty'] ?? '',
       videoUrl: info['preparation_video'] ?? '',
-      ingredients: List<Map<String, dynamic>>.from(ingredientsJson)
-          .map((e) => IngredientGroup.fromJson(e))
-          .toList(),
+      ingredients: parsedIngredients,
       procedures: List<Map<String, dynamic>>.from(proceduresJson)
           .map((e) => ProcedureGroup.fromJson(e))
           .toList(),

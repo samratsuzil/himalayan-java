@@ -9,13 +9,13 @@ class IngredientGroup {
     required this.items,
   });
 
- Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'groupName': groupName,
       'items': items.map((ingredient) => ingredient.toJson()).toList(),
     };
   }
-  
+
   factory IngredientGroup.fromJson(Map<String, dynamic> json) {
     final sub = json['sub_ingredients'] ?? {};
     final itemsJson = sub['items'] ?? [];

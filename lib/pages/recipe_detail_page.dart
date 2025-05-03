@@ -12,7 +12,7 @@ class RecipeDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(recipe.name),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -48,34 +48,36 @@ class RecipeDetailPage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              // Ingredients
+              // Ingredients Section
               const Text('Ingredients',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
+
               JsonViewer(
-                jsonData: {
-                  "ingredients": recipe.ingredients
-                      .map((group) => group.toJson())
-                      .toList(),
-                },
+                jsonData: {"ingredients": recipe.ingredients},
               ),
               const SizedBox(height: 8),
 
+              // Render Ingredients - Handle both IngredientItem and IngredientGroup
               for (var ingredientGroup in recipe.ingredients)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(ingredientGroup.groupName,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    for (var ingredient in ingredientGroup.items)
-                      Text(
-                          '${ingredient.quantity} ${ingredient.unit} ${ingredient.name}'),
-                    const SizedBox(height: 16),
-                  ],
-                ),
+                if (ingredientGroup is IngredientGroup)
+                  // If it's a Group, render the group with sub-ingredients
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(ingredientGroup.groupName,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      for (var ingredient in ingredientGroup.items)
+                        _ingredientTile(ingredient),
+                      const SizedBox(height: 16),
+                    ],
+                  )
+                else if (ingredientGroup is IngredientItem)
+                  // If it's a single Ingredient, render it directly
+                  _ingredientTile(ingredientGroup as IngredientItem),
 
-              // Procedures
+              // Procedures Section
               const Text('Procedures',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
@@ -95,6 +97,29 @@ class RecipeDetailPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  // Widget to display a single ingredient item
+  Widget _ingredientTile(IngredientItem ingredient) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+        Text(
+          '${ingredient.quantity} ${ingredient.unit} ${ingredient.name}',
+          style: const TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 8),
+        if (ingredient.image != null && ingredient.image!.isNotEmpty)
+          Image.network(
+            ingredient.image!,
+            height: 80,
+            width: 80,
+            fit: BoxFit.cover,
+          ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }
