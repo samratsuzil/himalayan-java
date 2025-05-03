@@ -6,8 +6,6 @@ import 'package:recipe_book/pages/recipe_detail_page.dart';
 import 'package:recipe_book/services/category_service.dart';
 import 'package:recipe_book/services/recipe_service.dart';
 import 'package:recipe_book/widgets/recipe_search_delegate.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,44 +17,46 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Category> categories = [];
   List<Recipe> recipes = [];
-  bool isLoading = true;
-  String searchQuery = ""; // Track the search query
-  int? selectedCategoryId; // Track the selected category
+  bool isCategoryLoading = true;
+  bool isRecipeLoading = true;
+  String searchQuery = "";
+  int? selectedCategoryId;
 
   @override
   void initState() {
     super.initState();
-    fetchCategories(); // Fetch categories
-    fetchRecipes(); // Fetch recipes on load
+    fetchCategories();
+    fetchRecipes();
   }
 
   Future<void> fetchCategories() async {
+    setState(() => isCategoryLoading = true);
     try {
       final fetchedCategories = await CategoryService.fetchCategories();
       setState(() {
         categories = fetchedCategories;
       });
     } catch (e) {
-      // Handle error gracefully
       print('Error fetching categories: $e');
+    } finally {
+      setState(() => isCategoryLoading = false);
     }
   }
 
   Future<void> fetchRecipes({String? searchQuery, int? categoryId}) async {
-    setState(() => isLoading = true);
-
+    setState(() => isRecipeLoading = true);
     try {
       final fetchedRecipes = await RecipeService.fetchRecipes(
         searchQuery: searchQuery,
-        categoryId: selectedCategoryId,
+        categoryId: categoryId,
       );
       setState(() {
         recipes = fetchedRecipes;
-        isLoading = false;
       });
     } catch (e) {
-      setState(() => isLoading = false);
-      // handle error (show a snackbar maybe)
+      print('Error fetching recipes: $e');
+    } finally {
+      setState(() => isRecipeLoading = false);
     }
   }
 
@@ -65,173 +65,160 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Top Section
-                    Row(
-                      children: [
-                        const Text('Recipe Book',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                            )),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.search),
-                          onPressed: () async {
-                            // Trigger the search
-                            final result = await showSearch<String>(
-                              context: context,
-                              delegate: RecipeSearchDelegate(),
-                            );
-                            // Update the search query after search closes
-                            if (result != null && result.isNotEmpty) {
-                              // Delay setState until after the search delegate closes
-                              Future.delayed(Duration.zero, () {
-                                setState(() {
-                                  searchQuery = result;
-                                  isLoading = true; // Show loading
-                                });
-                                // Fetch the recipes based on the new search query
-                                fetchRecipes(
-                                    categoryId: selectedCategoryId,
-                                    searchQuery: searchQuery);
-                              });
-                            }
-                          },
-                        ),
-                        const SizedBox(width: 12)
-                      ],
-                    ),
-                    const SizedBox(height: 24),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header Section
+              Row(
+                children: [
+                  const Text(
+                    'Recipe Book',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: () async {
+                      final result = await showSearch<String>(
+                        context: context,
+                        delegate: RecipeSearchDelegate(),
+                      );
+                      if (result != null && result.isNotEmpty) {
+                        Future.delayed(Duration.zero, () {
+                          setState(() {
+                            searchQuery = result;
+                          });
+                          fetchRecipes(
+                            categoryId: selectedCategoryId,
+                            searchQuery: searchQuery,
+                          );
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                ],
+              ),
 
-                    // Categories Section
-                    const Text('Categories',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18)),
-                    const SizedBox(height: 12),
-                    SingleChildScrollView(
+              const SizedBox(height: 24),
+
+              // Categories Section
+              const Text('Categories',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              const SizedBox(height: 12),
+              isCategoryLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: categories
-                            .map((cat) => Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      // Fetch recipes by category when tapped
-                                      setState(() {
-                                        selectedCategoryId =
-                                            cat.id; // Update selected category
-                                      });
-                                      fetchRecipes(
-                                          categoryId: cat.id,
-                                          searchQuery: searchQuery);
-                                    },
-                                    child: Chip(
-                                      label: Text(cat.name),
-                                      backgroundColor:
-                                          selectedCategoryId == cat.id
-                                              ? Colors.teal[900]
-                                              : Colors.red[900],
-                                      labelStyle: const TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                            .map(
+                              (cat) => Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() => selectedCategoryId = cat.id);
+                                    fetchRecipes(
+                                      categoryId: cat.id,
+                                      searchQuery: searchQuery,
+                                    );
+                                  },
+                                  child: Chip(
+                                    label: Text(cat.name),
+                                    backgroundColor:
+                                        selectedCategoryId == cat.id
+                                            ? Colors.teal[900]
+                                            : Colors.red[900],
+                                    labelStyle:
+                                        const TextStyle(color: Colors.white),
                                   ),
-                                ))
+                                ),
+                              ),
+                            )
                             .toList(),
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-                    if (searchQuery.isNotEmpty) ...[
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {},
-                            child: Row(
-                              children: [
-                                Text('Clear Search $searchQuery'),
-                                IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        searchQuery = ''; // Clear search query
-                                        fetchRecipes(
-                                            categoryId: selectedCategoryId,
-                                            searchQuery:
-                                                ''); // Fetch all recipes again
-                                      });
-                                    },
-                                    icon: Icon(Icons.close))
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                    // Grid of Recipes
-                    const Text('Recipes',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18)),
-                    const SizedBox(height: 12),
-
-                    // Display the list of recipes
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        return ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxHeight: constraints.maxHeight,
-                          ),
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: recipes.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount:
-                                  MediaQuery.of(context).orientation ==
-                                          Orientation.portrait
-                                      ? 2
-                                      : 4,
-                              childAspectRatio: 0.9,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
-                            ),
-                            itemBuilder: (context, index) {
-                              final recipe = recipes[index];
-                              return GestureDetector(
-                                  onTap: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              RecipeDetailPage(recipe: recipe),
-                                        ),
-                                      ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      FoodCard(
-                                        imageUrl: recipe.featuredImage ?? '',
-                                        title: recipe.name,
-                                        // rating: recipe.difficulty,
-                                      ),
-                                    ],
-                                  ));
-                            },
-                          ),
-                        );
+              // Clear Search Button
+              if (searchQuery.isNotEmpty) ...[
+                Row(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() => searchQuery = '');
+                        fetchRecipes(categoryId: selectedCategoryId);
                       },
+                      icon: const Icon(Icons.close),
+                      label: Text('Clear Search "$searchQuery"'),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 24),
+              ],
+
+              // Recipes Section
+              const Text('Recipes',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              const SizedBox(height: 12),
+
+              if (isRecipeLoading)
+                const Center(child: CircularProgressIndicator())
+              else if (recipes.isEmpty)
+                const Center(
+                    child: Text(
+                        "No recipes found. Try another search or category."))
+              else
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: constraints.maxHeight,
+                      ),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: recipes.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: MediaQuery.of(context).orientation ==
+                                  Orientation.portrait
+                              ? 2
+                              : 4,
+                          childAspectRatio: 0.9,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
+                        itemBuilder: (context, index) {
+                          final recipe = recipes[index];
+                          return GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RecipeDetailPage(recipe: recipe),
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                FoodCard(
+                                  imageUrl: recipe.featuredImage ?? '',
+                                  title: recipe.name,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
