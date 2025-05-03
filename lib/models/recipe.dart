@@ -50,7 +50,6 @@ class Recipe {
           .map((e) => ProcedureGroup.fromJson(e))
           .toList(),
       featuredImage: imageUrl,
-     
     );
   }
 }

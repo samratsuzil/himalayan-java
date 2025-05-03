@@ -2,7 +2,7 @@ class IngredientItem {
   final String name;
   final String unit;
   final double quantity;
-  final double image;
+  final String image;
 
   IngredientItem({
     required this.name,

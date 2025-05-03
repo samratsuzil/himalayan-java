@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book/models/recipe.dart';
-import 'package:recipe_book/pages/recipe_detail_page.dart';
 import 'package:recipe_book/components/food_card.dart';
-import 'package:recipe_book/components/suggested_dish.dart';
+import 'package:recipe_book/models/recipe.dart';
+import 'package:recipe_book/models/category.dart';
+import 'package:recipe_book/pages/recipe_detail_page.dart';
+import 'package:recipe_book/services/category_service.dart';
 import 'package:recipe_book/services/recipe_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,27 +14,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final categories = ['All', 'Breakfast', 'Lunch', 'Dinner'];
+  List<Category> categories = [];
   List<Recipe> recipes = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchRecipes();
+    fetchInitialData();
   }
 
-  Future<void> fetchRecipes() async {
+  Future<void> fetchInitialData() async {
     try {
-      final result = await RecipeService.fetchRecipes();
+      final fetchedCategories = await CategoryService.fetchCategories();
+      final fetchedRecipes = await RecipeService.fetchRecipes();
+
       setState(() {
-        recipes = result;
+        categories = fetchedCategories;
+        recipes = fetchedRecipes;
         isLoading = false;
       });
     } catch (e) {
       setState(() => isLoading = false);
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load recipes: $e')),
+        SnackBar(content: Text('Error: $e')),
       );
     }
   }
@@ -42,19 +47,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.grid_view), label: 'Categories'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.bookmark_border), label: 'Save'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline), label: 'Profile'),
-        ],
-      ),
       body: SafeArea(
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
@@ -66,93 +58,95 @@ class _HomePageState extends State<HomePage> {
                     // Top Section
                     Row(
                       children: [
-                        const CircleAvatar(
-                          radius: 24,
-                          backgroundImage:
-                              NetworkImage('https://i.pravatar.cc/150?img=3'),
-                        ),
-                        const SizedBox(width: 12),
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Welcome Back!',
-                                style: TextStyle(fontSize: 12)),
-                            Text('Wilson Dias',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                          ],
-                        ),
+                        const Text('Recipe Book',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            )),
                         const Spacer(),
                         const Icon(Icons.search),
-                        const SizedBox(width: 12),
-                        const Icon(Icons.notifications_outlined),
+                        const SizedBox(width: 12)
                       ],
                     ),
                     const SizedBox(height: 24),
 
-                    // Categories
+                    // Categories Section
                     const Text('Categories',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18)),
                     const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: categories
-                          .map((cat) => Chip(
-                                label: Text(cat),
-                                backgroundColor: cat == 'All'
-                                    ? Colors.black
-                                    : Colors.grey[200],
-                                labelStyle: TextStyle(
-                                    color: cat == 'All'
-                                        ? Colors.white
-                                        : Colors.black),
-                              ))
-                          .toList(),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: categories
+                            .map((cat) => Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: Chip(
+                                    label: Text(cat.name),
+                                    backgroundColor: Colors.red[400],
+                                    labelStyle: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
+                      ),
                     ),
+
                     const SizedBox(height: 24),
 
-                    // Popular Now
-                    const Text('Popular Now',
+                    // Grid of Recipes
+                    const Text('Recipes',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18)),
                     const SizedBox(height: 12),
-                    ...recipes.take(2).map((recipe) => GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  RecipeDetailPage(recipe: recipe),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: FoodCard(
-                              imageUrl: recipe.featuredImage,
-                              title: recipe.name,
-                              rating: recipe.difficulty,
-                            ),
-                          ),
-                        )),
 
-                    const SizedBox(height: 24),
-                    const Text('You May Also Like',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18)),
-                    const SizedBox(height: 12),
-                    ...recipes.skip(2).map((recipe) => GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  RecipeDetailPage(recipe: recipe),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        return ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: constraints.maxHeight,
+                          ),
+                          child: GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: recipes.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount:
+                                  MediaQuery.of(context).orientation ==
+                                          Orientation.portrait
+                                      ? 2
+                                      : 4,
+                              childAspectRatio: 0.9,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
                             ),
+                            itemBuilder: (context, index) {
+                              final recipe = recipes[index];
+                              return GestureDetector(
+                                  onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              RecipeDetailPage(recipe: recipe),
+                                        ),
+                                      ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      FoodCard(
+                                        imageUrl: recipe.featuredImage ?? '',
+                                        title: recipe.name,
+                                        rating: recipe.difficulty,
+                                      ),
+                                    ],
+                                  ));
+                            },
                           ),
-                          child: SuggestedDish(
-                            imageUrl: recipe.featuredImage,
-                            title: recipe.name,
-                            rating: recipe.difficulty,
-                          ),
-                        )),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
