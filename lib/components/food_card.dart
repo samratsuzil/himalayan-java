@@ -3,14 +3,8 @@ import 'package:flutter/material.dart';
 class FoodCard extends StatelessWidget {
   final String? imageUrl;
   final String title;
-  final String rating;
 
-  const FoodCard({
-    super.key,
-    required this.imageUrl,
-    required this.title,
-    required this.rating,
-  });
+  const FoodCard({super.key, required this.imageUrl, required this.title});
 
   @override
   Widget build(BuildContext context) {

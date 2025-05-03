@@ -83,14 +83,12 @@ class HomePage extends StatelessWidget {
                 imageUrl:
                     'https://fastly.picsum.photos/id/730/200/300.jpg?hmac=Xa_29B3ZIok8lz4JGLZUBU_ARxJew0twrMWMHEy_T1I',
                 title: 'Pizza Palace',
-                rating: '5.0',
               ),
               const SizedBox(height: 12),
               FoodCard(
                 imageUrl:
                     'https://fastly.picsum.photos/id/730/200/300.jpg?hmac=Xa_29B3ZIok8lz4JGLZUBU_ARxJew0twrMWMHEy_T1I',
                 title: 'Green Bowl',
-                rating: '4.8',
               ),
 
               const SizedBox(height: 24),

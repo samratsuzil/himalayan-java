@@ -5,6 +5,9 @@ import 'package:recipe_book/models/category.dart';
 import 'package:recipe_book/pages/recipe_detail_page.dart';
 import 'package:recipe_book/services/category_service.dart';
 import 'package:recipe_book/services/recipe_service.dart';
+import 'package:recipe_book/widgets/recipe_search_delegate.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,29 +20,43 @@ class _HomePageState extends State<HomePage> {
   List<Category> categories = [];
   List<Recipe> recipes = [];
   bool isLoading = true;
+  String searchQuery = ""; // Track the search query
+  int? selectedCategoryId; // Track the selected category
 
   @override
   void initState() {
     super.initState();
-    fetchInitialData();
+    fetchCategories(); // Fetch categories
+    fetchRecipes(); // Fetch recipes on load
   }
 
-  Future<void> fetchInitialData() async {
+  Future<void> fetchCategories() async {
     try {
       final fetchedCategories = await CategoryService.fetchCategories();
-      final fetchedRecipes = await RecipeService.fetchRecipes();
-
       setState(() {
         categories = fetchedCategories;
+      });
+    } catch (e) {
+      // Handle error gracefully
+      print('Error fetching categories: $e');
+    }
+  }
+
+  Future<void> fetchRecipes({String? searchQuery, int? categoryId}) async {
+    setState(() => isLoading = true);
+
+    try {
+      final fetchedRecipes = await RecipeService.fetchRecipes(
+        searchQuery: searchQuery,
+        categoryId: selectedCategoryId,
+      );
+      setState(() {
         recipes = fetchedRecipes;
         isLoading = false;
       });
     } catch (e) {
       setState(() => isLoading = false);
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      // handle error (show a snackbar maybe)
     }
   }
 
@@ -64,7 +81,30 @@ class _HomePageState extends State<HomePage> {
                               fontSize: 24,
                             )),
                         const Spacer(),
-                        const Icon(Icons.search),
+                        IconButton(
+                          icon: const Icon(Icons.search),
+                          onPressed: () async {
+                            // Trigger the search
+                            final result = await showSearch<String>(
+                              context: context,
+                              delegate: RecipeSearchDelegate(),
+                            );
+                            // Update the search query after search closes
+                            if (result != null && result.isNotEmpty) {
+                              // Delay setState until after the search delegate closes
+                              Future.delayed(Duration.zero, () {
+                                setState(() {
+                                  searchQuery = result;
+                                  isLoading = true; // Show loading
+                                });
+                                // Fetch the recipes based on the new search query
+                                fetchRecipes(
+                                    categoryId: selectedCategoryId,
+                                    searchQuery: searchQuery);
+                              });
+                            }
+                          },
+                        ),
                         const SizedBox(width: 12)
                       ],
                     ),
@@ -81,11 +121,26 @@ class _HomePageState extends State<HomePage> {
                         children: categories
                             .map((cat) => Padding(
                                   padding: const EdgeInsets.only(right: 8),
-                                  child: Chip(
-                                    label: Text(cat.name),
-                                    backgroundColor: Colors.red[400],
-                                    labelStyle: const TextStyle(
-                                      color: Colors.white,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      // Fetch recipes by category when tapped
+                                      setState(() {
+                                        selectedCategoryId =
+                                            cat.id; // Update selected category
+                                      });
+                                      fetchRecipes(
+                                          categoryId: cat.id,
+                                          searchQuery: searchQuery);
+                                    },
+                                    child: Chip(
+                                      label: Text(cat.name),
+                                      backgroundColor:
+                                          selectedCategoryId == cat.id
+                                              ? Colors.teal[900]
+                                              : Colors.red[900],
+                                      labelStyle: const TextStyle(
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ))
@@ -95,12 +150,39 @@ class _HomePageState extends State<HomePage> {
 
                     const SizedBox(height: 24),
 
+                    if (searchQuery.isNotEmpty) ...[
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: Row(
+                              children: [
+                                Text('Clear Search $searchQuery'),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        searchQuery = ''; // Clear search query
+                                        fetchRecipes(
+                                            categoryId: selectedCategoryId,
+                                            searchQuery:
+                                                ''); // Fetch all recipes again
+                                      });
+                                    },
+                                    icon: Icon(Icons.close))
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                    ],
                     // Grid of Recipes
                     const Text('Recipes',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18)),
                     const SizedBox(height: 12),
 
+                    // Display the list of recipes
                     LayoutBuilder(
                       builder: (context, constraints) {
                         return ConstrainedBox(
@@ -138,7 +220,7 @@ class _HomePageState extends State<HomePage> {
                                       FoodCard(
                                         imageUrl: recipe.featuredImage ?? '',
                                         title: recipe.name,
-                                        rating: recipe.difficulty,
+                                        // rating: recipe.difficulty,
                                       ),
                                     ],
                                   ));
