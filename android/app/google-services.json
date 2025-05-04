@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "511574118306",
+    "project_id": "recipe-book-a437f",
+    "storage_bucket": "recipe-book-a437f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:511574118306:android:8ad25a5b8ad3b694c82cfb",
+        "android_client_info": {
+          "package_name": "com.astranix.recipe_book"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA06EF4vEGrBK9fxFLkoPjgKZKkJkDtUWc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:511574118306:android:3a133a8212641303c82cfb",
+        "android_client_info": {
+          "package_name": "com.example.recipe_book"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA06EF4vEGrBK9fxFLkoPjgKZKkJkDtUWc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

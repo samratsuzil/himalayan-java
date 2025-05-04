@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/pages/home_page.dart';
+import 'firebase_options.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+//   await Firebase.initializeApp(
+//    options = DefaultFirebaseOptions.currentPlatform,
+//  );
   const MyApp({super.key});
 
   @override
