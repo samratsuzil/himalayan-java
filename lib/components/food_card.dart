@@ -19,7 +19,6 @@ class FoodCard extends StatelessWidget {
             aspectRatio: 1,
             child: Stack(
               children: [
-                // Background image
                 Positioned.fill(
                   child: Image.network(
                     imageUrl ?? '',
@@ -30,7 +29,6 @@ class FoodCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Dark gradient overlay with title
                 Positioned(
                   left: 0,
                   right: 0,

@@ -4,12 +4,10 @@ import 'dart:convert';
 class JsonViewer extends StatelessWidget {
   final Map<String, dynamic> jsonData;
 
-  // Constructor that takes jsonData as an argument
   const JsonViewer({super.key, required this.jsonData});
 
   @override
   Widget build(BuildContext context) {
-    // Convert the Map to a JSON string
     String jsonString = jsonEncode(jsonData);
 
     return SingleChildScrollView(

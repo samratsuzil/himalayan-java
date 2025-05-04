@@ -6,8 +6,7 @@ class Recipe {
   final int calories;
   final String difficulty;
   final String videoUrl;
-  final List<dynamic>
-      ingredients; // Can be either IngredientGroup or IngredientItem
+  final List<dynamic> ingredients;
   final List<dynamic> procedures;
   final String? featuredImage;
 
@@ -28,7 +27,6 @@ class Recipe {
     final embedded = json['_embedded'] ?? {};
     String? imageUrl;
 
-    // Extract featured image from _embedded
     if (embedded['wp:featuredmedia'] != null &&
         embedded['wp:featuredmedia'].isNotEmpty) {
       imageUrl = embedded['wp:featuredmedia'][0]['source_url'];
@@ -37,14 +35,11 @@ class Recipe {
     final ingredientsJson = acf['ingredients'] ?? [];
     final proceduresJson = acf['procedures'] ?? [];
 
-    // Dynamically parse ingredients as either IngredientGroup or IngredientItem
     List<dynamic> parsedIngredients = [];
     for (var ingredient in ingredientsJson) {
       if (ingredient.containsKey('sub_ingredients')) {
-        // If it contains 'sub_ingredients', treat it as an IngredientGroup
         parsedIngredients.add(IngredientGroup.fromJson(ingredient));
       } else {
-        // Otherwise, treat it as a single IngredientItem
         parsedIngredients
             .add(IngredientItem.fromJson(ingredient['ingredient']));
       }

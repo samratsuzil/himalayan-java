@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/models/models.dart';
-import 'package:recipe_book/helpers/media_helper.dart';
+import 'package:recipe_book/helpers/fetch_media_url_helper.dart';
 
 class IngredientTile extends StatelessWidget {
   final IngredientItem ingredient;
@@ -30,7 +30,7 @@ class IngredientTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<String?>(
       future: ingredient.image != null
-          ? fetchImageUrl(ingredient.image!)
+          ? fetchMediaUrl(ingredient.image!)
           : Future.value(null),
       builder: (context, snapshot) {
         final imageUrl = snapshot.data;

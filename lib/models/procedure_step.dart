@@ -1,7 +1,7 @@
 class ProcedureStep {
   final String? description;
   final int? image;
-  String? imageUrl; // Will be resolved later
+  String? imageUrl;
 
   ProcedureStep({this.description, this.image, this.imageUrl});
 

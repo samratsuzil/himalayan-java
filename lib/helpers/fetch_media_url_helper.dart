@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
 
-Future<String?> fetchImageUrl(int id) async {
+Future<String?> fetchMediaUrl(int id) async {
   try {
     final response = await http.get(
       Uri.parse('https://project.astranix.com.np/wp-json/wp/v2/media/$id'),

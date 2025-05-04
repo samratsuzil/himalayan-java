@@ -21,8 +21,7 @@ class RecipeDetailPage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(
-                context); // Pops the current page from the navigation stack
+            Navigator.pop(context);
           },
         ),
       ),
@@ -32,20 +31,16 @@ class RecipeDetailPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Recipe Image
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  recipe.featuredImage ??
-                      'assets/placeholder.jpg', // Use placeholder image if no URL
+                  recipe.featuredImage ?? 'assets/placeholder.jpg',
                   fit: BoxFit.cover,
                   height: 200,
                   width: double.infinity,
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Ingredients Section
               const Text(
                 'Ingredients',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -72,16 +67,12 @@ class RecipeDetailPage extends StatelessWidget {
                   )
                 else if (group is IngredientItem)
                   IngredientTile(ingredient: group),
-
               SizedBox(height: 16),
-
-              // Procedures Section
               const Text(
                 'Procedures',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-
               for (var group in recipe.procedures)
                 if (group is ProcedureGroup)
                   Column(

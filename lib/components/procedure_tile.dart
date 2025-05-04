@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/models/models.dart';
-import 'package:recipe_book/helpers/media_helper.dart';
+import 'package:recipe_book/helpers/fetch_media_url_helper.dart';
 
 class ProcedureTile extends StatelessWidget {
   final ProcedureStep procedure;
@@ -27,12 +27,9 @@ class ProcedureTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return JsonViewer(
-    //   jsonData: procedure.toJson(),
-    // );
     return FutureBuilder<String?>(
       future: procedure.image != null
-          ? fetchImageUrl(procedure.image!)
+          ? fetchMediaUrl(procedure.image!)
           : Future.value(null),
       builder: (context, snapshot) {
         final imageUrl = snapshot.data;
