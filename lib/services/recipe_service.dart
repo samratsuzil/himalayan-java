@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import '../models/recipe.dart';
 
@@ -22,7 +23,7 @@ class RecipeService {
     }
 
     // Log the URL for debugging purposes
-    print('Fetching recipes from: $url');
+    log('Fetching recipes from: $url');
 
     final response = await http.get(Uri.parse(url));
 
@@ -30,7 +31,7 @@ class RecipeService {
       final List<dynamic> data = jsonDecode(response.body);
 
       // Log the data to check what is returned
-      print('Received data: $data');
+      log('Received data: $data');
 
       return data
           .map((item) => Recipe.fromJson(item as Map<String, dynamic>))

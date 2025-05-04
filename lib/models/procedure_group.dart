@@ -9,6 +9,13 @@ class ProcedureGroup {
     required this.steps,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'groupName': groupName,
+      'steps': steps.map((step) => step.toJson()).toList(),
+    };
+  }
+
   factory ProcedureGroup.fromJson(Map<String, dynamic> json) {
     final sub = json['sub_procedure'] ?? {};
     final stepsJson = sub['sub_procedures'] ?? [];

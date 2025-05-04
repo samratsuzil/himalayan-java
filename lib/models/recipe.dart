@@ -1,6 +1,4 @@
-import 'ingredient_group.dart';
-import 'ingredient_item.dart';
-import 'procedure_group.dart';
+import 'package:recipe_book/models/models.dart';
 
 class Recipe {
   final String name;
@@ -10,7 +8,7 @@ class Recipe {
   final String videoUrl;
   final List<dynamic>
       ingredients; // Can be either IngredientGroup or IngredientItem
-  final List<ProcedureGroup> procedures;
+  final List<dynamic> procedures;
   final String? featuredImage;
 
   Recipe({
@@ -47,20 +45,28 @@ class Recipe {
         parsedIngredients.add(IngredientGroup.fromJson(ingredient));
       } else {
         // Otherwise, treat it as a single IngredientItem
-        parsedIngredients.add(IngredientItem.fromJson(ingredient));
+        parsedIngredients
+            .add(IngredientItem.fromJson(ingredient['ingredient']));
+      }
+    }
+
+    List<dynamic> parsedProcedures = [];
+    for (var procedure in proceduresJson) {
+      if (procedure.containsKey('sub_procedure')) {
+        parsedProcedures.add(ProcedureGroup.fromJson(procedure));
+      } else {
+        parsedProcedures.add(ProcedureStep.fromJson(procedure['procedure']));
       }
     }
 
     return Recipe(
-      name: info['recipe_name'] ?? '',
+      name: json['title']['rendered'] ?? '',
       servings: info['number_of_servings'] ?? 0,
       calories: info['recipe_calories'] ?? 0,
       difficulty: info['recipe_difficulty'] ?? '',
       videoUrl: info['preparation_video'] ?? '',
       ingredients: parsedIngredients,
-      procedures: List<Map<String, dynamic>>.from(proceduresJson)
-          .map((e) => ProcedureGroup.fromJson(e))
-          .toList(),
+      procedures: parsedProcedures,
       featuredImage: imageUrl,
     );
   }

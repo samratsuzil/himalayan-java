@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:recipe_book/components/food_card.dart';
 import 'package:recipe_book/models/recipe.dart';
@@ -37,7 +39,7 @@ class _HomePageState extends State<HomePage> {
         categories = fetchedCategories;
       });
     } catch (e) {
-      print('Error fetching categories: $e');
+      log('Error fetching categories: $e');
     } finally {
       setState(() => isCategoryLoading = false);
     }
@@ -54,7 +56,7 @@ class _HomePageState extends State<HomePage> {
         recipes = fetchedRecipes;
       });
     } catch (e) {
-      print('Error fetching recipes: $e');
+      log('Error fetching recipes: $e');
     } finally {
       setState(() => isRecipeLoading = false);
     }

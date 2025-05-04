@@ -1,16 +1,22 @@
 class ProcedureStep {
-  final String description;
-  final int imageId;
+  final String? description;
+  final int? image;
+  String? imageUrl; // Will be resolved later
 
-  ProcedureStep({
-    required this.description,
-    required this.imageId,
-  });
+  ProcedureStep({this.description, this.image, this.imageUrl});
 
   factory ProcedureStep.fromJson(Map<String, dynamic> json) {
     return ProcedureStep(
       description: json['description'] ?? '',
-      imageId: json['image'] ?? 0,
+      image: json['image'] is int ? json['image'] : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'description': description ?? '',
+      'image': image,
+      'imageUrl': imageUrl,
+    };
   }
 }

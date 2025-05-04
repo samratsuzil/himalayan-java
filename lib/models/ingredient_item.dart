@@ -2,21 +2,23 @@ class IngredientItem {
   final String name;
   final String unit;
   final double quantity;
-  final String image;
+  final int? image;
+  String? imageUrl; // Will be resolved later
 
   IngredientItem({
     required this.name,
     required this.unit,
     required this.quantity,
     required this.image,
+    this.imageUrl,
   });
 
   factory IngredientItem.fromJson(Map<String, dynamic> json) {
     return IngredientItem(
       name: json['name'] ?? '',
       unit: json['unit'] ?? '',
-      image: json['imageId'] ?? '',
       quantity: (json['quantity'] ?? 0).toDouble(),
+      image: json['image'] is int ? json['image'] : null,
     );
   }
 
@@ -26,6 +28,7 @@ class IngredientItem {
       'quantity': quantity,
       'unit': unit,
       'image': image,
+      'imageUrl': imageUrl,
     };
   }
 }

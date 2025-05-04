@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book/components/json_viewer.dart';
 import 'package:recipe_book/models/models.dart';
+import 'package:recipe_book/components/ingredient_tile.dart';
+import 'package:recipe_book/components/procedure_tile.dart';
 
 class RecipeDetailPage extends StatelessWidget {
   final Recipe recipe;
@@ -11,7 +12,11 @@ class RecipeDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(recipe.name),
+        title: Text(recipe.name,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            )),
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -40,86 +45,68 @@ class RecipeDetailPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Recipe Name and Author
-              Text(
-                recipe.name,
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-
               // Ingredients Section
-              const Text('Ingredients',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-
-              JsonViewer(
-                jsonData: {"ingredients": recipe.ingredients},
+              const Text(
+                'Ingredients',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-
-              // Render Ingredients - Handle both IngredientItem and IngredientGroup
-              for (var ingredientGroup in recipe.ingredients)
-                if (ingredientGroup is IngredientGroup)
-                  // If it's a Group, render the group with sub-ingredients
+              for (var group in recipe.ingredients)
+                if (group is IngredientGroup)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(ingredientGroup.groupName,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      for (var ingredient in ingredientGroup.items)
-                        _ingredientTile(ingredient),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 8),
+                      Text(
+                        group.groupName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      ...group.items.map((ingredient) => Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: IngredientTile(ingredient: ingredient),
+                          )),
                     ],
                   )
-                else if (ingredientGroup is IngredientItem)
-                  // If it's a single Ingredient, render it directly
-                  _ingredientTile(ingredientGroup as IngredientItem),
+                else if (group is IngredientItem)
+                  IngredientTile(ingredient: group),
+
+              SizedBox(height: 16),
 
               // Procedures Section
-              const Text('Procedures',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'Procedures',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
-              for (var procedureGroup in recipe.procedures)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(procedureGroup.groupName,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    for (var procedure in procedureGroup.steps)
-                      Text(procedure.description),
-                    const SizedBox(height: 16),
-                  ],
-                ),
+
+              for (var group in recipe.procedures)
+                if (group is ProcedureGroup)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 8),
+                      Text(
+                        group.groupName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      ...group.steps.map((step) => Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: ProcedureTile(procedure: step),
+                          )),
+                    ],
+                  )
+                else if (group is ProcedureStep)
+                  ProcedureTile(procedure: group),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  // Widget to display a single ingredient item
-  Widget _ingredientTile(IngredientItem ingredient) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 8),
-        Text(
-          '${ingredient.quantity} ${ingredient.unit} ${ingredient.name}',
-          style: const TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 8),
-        if (ingredient.image != null && ingredient.image!.isNotEmpty)
-          Image.network(
-            ingredient.image!,
-            height: 80,
-            width: 80,
-            fit: BoxFit.cover,
-          ),
-        const SizedBox(height: 16),
-      ],
     );
   }
 }
