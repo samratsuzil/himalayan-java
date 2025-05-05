@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '511574118306',
     projectId: 'recipe-book-a437f',
     storageBucket: 'recipe-book-a437f.firebasestorage.app',
-    iosBundleId: 'com.example.recipeBook',
+    iosBundleId: 'com.astranix.recipeBook',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '511574118306',
     projectId: 'recipe-book-a437f',
     storageBucket: 'recipe-book-a437f.firebasestorage.app',
-    iosBundleId: 'com.example.recipeBook',
+    iosBundleId: 'com.astranix.recipeBook',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

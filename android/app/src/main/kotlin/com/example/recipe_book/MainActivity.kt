@@ -1,4 +1,4 @@
-package com.example.recipe_book
+package com.astranix.recipe_book
 
 import io.flutter.embedding.android.FlutterActivity
 
