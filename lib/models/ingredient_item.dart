@@ -3,14 +3,12 @@ class IngredientItem {
   final String unit;
   final double quantity;
   final int? image;
-  String? imageUrl; // Will be resolved later
 
   IngredientItem({
     required this.name,
     required this.unit,
     required this.quantity,
     required this.image,
-    this.imageUrl,
   });
 
   factory IngredientItem.fromJson(Map<String, dynamic> json) {
@@ -28,7 +26,6 @@ class IngredientItem {
       'quantity': quantity,
       'unit': unit,
       'image': image,
-      'imageUrl': imageUrl,
     };
   }
 }

@@ -1,4 +1,5 @@
 import 'package:recipe_book/models/models.dart';
+import 'package:html_unescape/html_unescape.dart';
 
 class Recipe {
   final String name;
@@ -9,17 +10,18 @@ class Recipe {
   final List<dynamic> ingredients;
   final List<dynamic> procedures;
   final String? featuredImage;
+  final int? author;
 
-  Recipe({
-    required this.name,
-    required this.servings,
-    required this.calories,
-    required this.difficulty,
-    required this.videoUrl,
-    required this.ingredients,
-    required this.procedures,
-    this.featuredImage,
-  });
+  Recipe(
+      {required this.name,
+      required this.servings,
+      required this.calories,
+      required this.difficulty,
+      required this.videoUrl,
+      required this.ingredients,
+      required this.procedures,
+      this.featuredImage,
+      this.author});
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
     final acf = json['acf'] ?? {};
@@ -55,14 +57,14 @@ class Recipe {
     }
 
     return Recipe(
-      name: json['title']['rendered'] ?? '',
-      servings: info['number_of_servings'] ?? 0,
-      calories: info['recipe_calories'] ?? 0,
-      difficulty: info['recipe_difficulty'] ?? '',
-      videoUrl: info['preparation_video'] ?? '',
-      ingredients: parsedIngredients,
-      procedures: parsedProcedures,
-      featuredImage: imageUrl,
-    );
+        name: HtmlUnescape().convert(json['title']['rendered'] ?? ''),
+        servings: info['number_of_servings'] ?? 0,
+        calories: info['recipe_calories'] ?? 0,
+        difficulty: info['recipe_difficulty'] ?? '',
+        videoUrl: info['preparation_video'] ?? '',
+        ingredients: parsedIngredients,
+        procedures: parsedProcedures,
+        featuredImage: imageUrl,
+        author: json['author']);
   }
 }

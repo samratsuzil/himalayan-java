@@ -1,9 +1,8 @@
 class ProcedureStep {
   final String? description;
   final int? image;
-  String? imageUrl;
 
-  ProcedureStep({this.description, this.image, this.imageUrl});
+  ProcedureStep({this.description, this.image});
 
   factory ProcedureStep.fromJson(Map<String, dynamic> json) {
     return ProcedureStep(
@@ -16,7 +15,6 @@ class ProcedureStep {
     return {
       'description': description ?? '',
       'image': image,
-      'imageUrl': imageUrl,
     };
   }
 }

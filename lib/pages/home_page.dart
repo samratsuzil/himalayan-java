@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:recipe_book/components/food_card.dart';
+import 'package:recipe_book/components/recipe_card.dart';
+import 'package:recipe_book/components/skeletons/recipe_card_skeleton.dart';
+import 'package:recipe_book/components/skeletons/category_chip_skeleton.dart';
 import 'package:recipe_book/models/recipe.dart';
 import 'package:recipe_book/models/category.dart';
 import 'package:recipe_book/pages/recipe_detail_page.dart';
@@ -81,7 +83,6 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
               Row(
                 children: [
                   const Text(
@@ -110,13 +111,17 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               const SizedBox(height: 24),
-
-              
               const Text('Categories',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               const SizedBox(height: 12),
               isCategoryLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(
+                            6, (_) => const CategoryChipSkeleton()),
+                      ),
+                    )
                   : SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -179,15 +184,10 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                     ),
-
               const SizedBox(height: 24),
-
-              
               const Text('Recipes',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               const SizedBox(height: 12),
-
-              
               if (searchQuery.isNotEmpty || selectedCategoryId != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
@@ -233,8 +233,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-
-              
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.6,
                 child: RefreshIndicator(
@@ -243,7 +241,22 @@ class _HomePageState extends State<HomePage> {
                     categoryId: selectedCategoryId,
                   ),
                   child: isRecipeLoading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? GridView.builder(
+                          itemCount: 6,
+                          padding: EdgeInsets.zero,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount:
+                                MediaQuery.of(context).orientation ==
+                                        Orientation.portrait
+                                    ? 1
+                                    : 2,
+                            childAspectRatio: 16 / 9,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                          ),
+                          itemBuilder: (_, __) => const RecipeCardSkeleton(),
+                        )
                       : recipes.isEmpty
                           ? const Center(
                               child: Text(
@@ -256,9 +269,9 @@ class _HomePageState extends State<HomePage> {
                                 crossAxisCount:
                                     MediaQuery.of(context).orientation ==
                                             Orientation.portrait
-                                        ? 2
-                                        : 4,
-                                childAspectRatio: 0.9,
+                                        ? 1
+                                        : 2,
+                                childAspectRatio: 16 / 9,
                                 crossAxisSpacing: 12,
                                 mainAxisSpacing: 12,
                               ),
@@ -275,10 +288,10 @@ class _HomePageState extends State<HomePage> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
-                                      FoodCard(
-                                        imageUrl: recipe.featuredImage ?? '',
-                                        title: recipe.name,
-                                      ),
+                                      RecipeCard(
+                                          imageUrl: recipe.featuredImage ?? '',
+                                          title: recipe.name,
+                                          author: recipe.author),
                                     ],
                                   ),
                                 );

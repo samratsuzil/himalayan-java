@@ -26,8 +26,6 @@ class RecipeService {
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
 
-      log('Received data: $data');
-
       return data
           .map((item) => Recipe.fromJson(item as Map<String, dynamic>))
           .toList();
