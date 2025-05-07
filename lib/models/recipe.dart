@@ -10,7 +10,9 @@ class Recipe {
   final List<dynamic> ingredients;
   final List<dynamic> procedures;
   final String? featuredImage;
-  final int? author;
+  final int author;
+  final String? prepTime;
+  final String? cookTime;
 
   Recipe(
       {required this.name,
@@ -21,10 +23,14 @@ class Recipe {
       required this.ingredients,
       required this.procedures,
       this.featuredImage,
-      this.author});
+      required this.author,
+      this.prepTime,
+      this.cookTime});
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
     final acf = json['acf'] ?? {};
+    final time = acf['time'] ?? {};
+
     final info = acf['info'] ?? {};
     final embedded = json['_embedded'] ?? {};
     String? imageUrl;
@@ -64,6 +70,9 @@ class Recipe {
         videoUrl: info['preparation_video'] ?? '',
         ingredients: parsedIngredients,
         procedures: parsedProcedures,
+        prepTime:
+            '${time['preparation_time']} ${time['preparation_time_unit']}',
+        cookTime: '${time['cook_time']}${time['cook_time_unit']}',
         featuredImage: imageUrl,
         author: json['author']);
   }

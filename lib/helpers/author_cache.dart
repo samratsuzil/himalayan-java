@@ -1,13 +1,22 @@
-import 'package:recipe_book/helpers/fetch_user_helper.dart';
+import 'package:recipe_book/models/user.dart';
 
-final Map<int, String> _authorCache = {};
+final Map<int, User> _authorCache = {};
 
-Future<String> getAuthorName(int authorId) async {
+Future<User> getUser(int authorId) async {
   if (_authorCache.containsKey(authorId)) {
     return _authorCache[authorId]!;
   }
 
-  final name = await fetchUserName(authorId) ?? 'Unknown';
-  _authorCache[authorId] = name;
-  return name;
+  final user = await fetchUser(authorId);
+  if (user != null) {
+    _authorCache[authorId] = user;
+    return user;
+  }
+
+  // Return a fallback User object if fetching fails
+  return User(
+    id: authorId,
+    name: 'Unknown',
+    imageUrl: '',
+  );
 }

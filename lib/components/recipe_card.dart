@@ -34,10 +34,10 @@ class _RecipeCardState extends State<RecipeCard> {
 
   Future<void> _loadAuthorName() async {
     if (widget.author != null) {
-      final name = await getAuthorName(widget.author!);
+      final author = await getUser(widget.author!);
       if (mounted) {
         setState(() {
-          authorName = name ?? 'Unknown';
+          authorName = author.name ?? 'Unknown';
         });
       }
     }
