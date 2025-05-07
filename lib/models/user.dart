@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
+import 'package:recipe_book/constants/api.dart';
 
 // Define a model class for User
 class User {
@@ -27,7 +28,7 @@ class User {
 Future<User?> fetchUser(int id) async {
   try {
     final response = await http.get(
-      Uri.parse('https://project.astranix.com.np/wp-json/v1/users/$id'),
+      Uri.parse('${ApiEndpoints.users}/$id'),
     );
     log('Fetching user data from: ${response.request?.url}');
     log('Response status: ${response.statusCode}');
