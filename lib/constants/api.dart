@@ -4,7 +4,7 @@ class ApiEndpoints {
   // Endpoints
   static const String recipes = '$baseUrl/recipes/?_embed';
   static const String media = '$baseUrl/media';
-  static const String categories = '$baseUrl/categories';
+  static const String categories = '$baseUrl/recipe-categories';
 
   static const String customAPIbaseUrl =
       'https://project.astranix.com.np/wp-json/v1';

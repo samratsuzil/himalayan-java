@@ -12,30 +12,46 @@ class RecipeDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int stepIndex = 1;
+    int ingredientIndex = 1;
+
+    List<Widget> ingredientWidgets = [];
     List<Widget> procedureWidgets = [];
 
-    for (int i = 0; i < recipe.procedures.length; i++) {
-      final group = recipe.procedures[i];
+    for (final group in recipe.ingredients) {
+      if (group is IngredientGroup) {
+        ingredientWidgets.add(const SizedBox(height: 8));
+        ingredientWidgets.add(
+          Text(
+            group.groupName,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+        );
 
+        for (final item in group.items) {
+          ingredientWidgets.add(
+            IngredientTile(ingredient: item, index: ingredientIndex++),
+          );
+        }
+      } else if (group is IngredientItem) {
+        ingredientWidgets.add(
+          IngredientTile(ingredient: group, index: ingredientIndex++),
+        );
+      }
+    }
+
+    for (final group in recipe.procedures) {
       if (group is ProcedureGroup) {
         procedureWidgets.add(const SizedBox(height: 8));
         procedureWidgets.add(
           Text(
             group.groupName,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         );
 
-        for (int j = 0; j < group.steps.length; j++) {
+        for (final step in group.steps) {
           procedureWidgets.add(
-            Padding(
-              padding: const EdgeInsets.only(left: 0),
-              child:
-                  ProcedureTile(procedure: group.steps[j], index: stepIndex++),
-            ),
+            ProcedureTile(procedure: step, index: stepIndex++),
           );
         }
       } else if (group is ProcedureStep) {
@@ -45,104 +61,109 @@ class RecipeDetailPage extends StatelessWidget {
       }
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(recipe.name,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            )),
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            recipe.name,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  recipe.featuredImage ?? 'assets/placeholder.jpg',
-                  fit: BoxFit.cover,
-                  height: 200,
-                  width: double.infinity,
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        recipe.featuredImage ?? 'assets/placeholder.jpg',
+                        fit: BoxFit.cover,
+                        height: 200,
+                        width: double.infinity,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    RecipeMetaInfo(
+                      authorId: recipe.author,
+                      calories: recipe.calories,
+                      difficulty: recipe.difficulty,
+                      prepTime: recipe.prepTime,
+                      cookTime: recipe.cookTime,
+                    ),
+                    const SizedBox(height: 16),
+                    const TabBar(
+                      labelColor: Colors.black,
+                      indicatorColor: Colors.orange,
+                      tabs: [
+                        Tab(text: 'Ingredients'),
+                        Tab(text: 'Procedures'),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      child: TabBarView(
+                        children: [
+                          // Ingredients Tab
+                          SingleChildScrollView(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Ingredients',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: ingredientWidgets,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Procedures Tab
+                          SingleChildScrollView(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Procedures',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: procedureWidgets,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 16),
-              RecipeMetaInfo(
-                authorId: recipe.author,
-                calories: recipe.calories,
-                difficulty: recipe.difficulty,
-                prepTime: recipe.prepTime,
-                cookTime: recipe.cookTime,
-              ),
-              const Text(
-                'Ingredients',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              for (var group in recipe.ingredients)
-                if (group is IngredientGroup)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 8),
-                      Text(
-                        group.groupName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      ...group.items.map((ingredient) => Padding(
-                            padding: const EdgeInsets.only(left: 40),
-                            child: IngredientTile(ingredient: ingredient),
-                          )),
-                    ],
-                  )
-                else if (group is IngredientItem)
-                  IngredientTile(ingredient: group),
-              SizedBox(height: 16),
-              const Text(
-                'Procedures',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              // for (var group in recipe.procedures)
-              //   if (group is ProcedureGroup)
-              //     Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         SizedBox(height: 8),
-              //         Text(
-              //           group.groupName,
-              //           style: const TextStyle(
-              //             fontWeight: FontWeight.bold,
-              //             fontSize: 16,
-              //           ),
-              //         ),
-              //         ...group.steps.map((step) => Padding(
-              //               padding: const EdgeInsets.only(left: 16),
-              //               child: ProcedureTile(procedure: step),
-              //             )),
-              //       ],
-              //     )
-              //   else if (group is ProcedureStep)
-              //     ProcedureTile(procedure: group),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: procedureWidgets,
-              )
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

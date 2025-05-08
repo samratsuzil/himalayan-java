@@ -38,7 +38,7 @@ class RecipeSearchDelegate extends SearchDelegate<String> {
     return ListView(
       children: [
         ListTile(
-          title: Text('Search for "$query"'),
+          title: Text('Search in recipes "$query"'),
           onTap: () {
             close(context, query);
           },

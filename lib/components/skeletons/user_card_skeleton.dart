@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-class AuthorCardSkeleton extends StatelessWidget {
-  const AuthorCardSkeleton({super.key});
+class UserCardSkeleton extends StatelessWidget {
+  const UserCardSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

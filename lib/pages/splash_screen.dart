@@ -61,7 +61,11 @@ class SplashScreen extends StatelessWidget {
                         Navigator.pushReplacementNamed(context, '/home');
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Colors.teal,
+                        textStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white),
                         alignment: Alignment.topCenter,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

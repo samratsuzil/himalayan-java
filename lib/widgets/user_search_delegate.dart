@@ -38,7 +38,7 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
     return ListView(
       children: [
         ListTile(
-          title: Text('Search for "$query"'),
+          title: Text('Search in chefs "$query"'),
           onTap: () {
             close(context, query);
           },

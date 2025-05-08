@@ -4,8 +4,10 @@ import 'package:recipe_book/helpers/fetch_media_url_helper.dart';
 
 class IngredientTile extends StatelessWidget {
   final IngredientItem ingredient;
+  final int index;
 
-  const IngredientTile({super.key, required this.ingredient});
+  const IngredientTile(
+      {super.key, required this.ingredient, required this.index});
 
   void _showFullImage(BuildContext context, String imageUrl) {
     showDialog(
@@ -41,20 +43,50 @@ class IngredientTile extends StatelessWidget {
             if (hasImage) _showFullImage(context, imageUrl);
           },
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: hasImage
-                ? Image.network(
-                    imageUrl,
-                    height: 40,
-                    width: 40,
-                    fit: BoxFit.cover,
-                  )
-                : Image.asset(
-                    'assets/images/placeholder.jpg',
-                    height: 40,
-                    width: 40,
-                    fit: BoxFit.cover,
+              borderRadius: BorderRadius.circular(2),
+              child: hasImage
+                  ? Image.network(
+                      imageUrl,
+                      height: 40,
+                      width: 80,
+                      fit: BoxFit.cover,
+                    )
+                  : null
+              // Image.asset(
+              //     'assets/images/placeholder.jpg',
+              //     height: 40,
+              //     width: 40,
+              //     fit: BoxFit.cover,
+              //   ),
+              ),
+        );
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 14,
+                backgroundColor: Colors.teal[50],
+                child: Text(
+                  '$index',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '${ingredient.quantity} ${ingredient.unit} ${ingredient.name}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(width: 12),
+              imageWidget,
+            ],
           ),
         );
 

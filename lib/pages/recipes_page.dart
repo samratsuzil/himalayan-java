@@ -98,6 +98,45 @@ class RecipesPageState extends State<RecipesPage> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+            localAuthorId != null && authorName != null
+                ? "$authorName"
+                : 'Home',
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            )),
+        backgroundColor: Colors.white,
+        leading: ModalRoute.of(context)?.settings.name == '/home'
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              final result = await showSearch<String>(
+                context: context,
+                delegate: RecipeSearchDelegate(),
+              );
+              if (result != null && result.isNotEmpty) {
+                setState(() {
+                  searchQuery = result;
+                });
+                fetchRecipes(
+                  categoryId: selectedCategoryId,
+                  searchQuery: searchQuery,
+                );
+              }
+            },
+          ),
+        ],
+      ),
       backgroundColor: Colors.grey[100],
       body: SafeArea(
         child: SingleChildScrollView(
@@ -105,37 +144,6 @@ class RecipesPageState extends State<RecipesPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    localAuthorId != null && authorName != null
-                        ? "${authorName!}'s Recipes"
-                        : 'All Recipes',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 24),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () async {
-                      final result = await showSearch<String>(
-                        context: context,
-                        delegate: RecipeSearchDelegate(),
-                      );
-                      if (result != null && result.isNotEmpty) {
-                        setState(() {
-                          searchQuery = result;
-                        });
-                        fetchRecipes(
-                          categoryId: selectedCategoryId,
-                          searchQuery: searchQuery,
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
               const Text('Categories',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               const SizedBox(height: 12),
@@ -210,8 +218,14 @@ class RecipesPageState extends State<RecipesPage> {
                       ),
                     ),
               const SizedBox(height: 24),
-              const Text('Recipes',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              Text(
+                  localAuthorId != null && authorName != null
+                      ? "${authorName!}'s Recipes"
+                      : 'All Recipes',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  )),
               const SizedBox(height: 12),
               if (searchQuery.isNotEmpty ||
                   selectedCategoryId != null ||
@@ -222,11 +236,15 @@ class RecipesPageState extends State<RecipesPage> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
+                        Text('Filters: ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14)),
+                        SizedBox(width: 8),
                         if (searchQuery.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: Chip(
-                              label: Text(searchQuery),
+                              label: Text("Search: $searchQuery"),
                               deleteIcon: const Icon(Icons.cancel, size: 20),
                               onDeleted: () {
                                 setState(() {
@@ -243,7 +261,7 @@ class RecipesPageState extends State<RecipesPage> {
                           Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: Chip(
-                              label: Text(categoryName),
+                              label: Text(' Category: $categoryName'),
                               deleteIcon: const Icon(Icons.cancel, size: 20),
                               onDeleted: () {
                                 setState(() {
@@ -260,7 +278,7 @@ class RecipesPageState extends State<RecipesPage> {
                           Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: Chip(
-                              label: Text(authorName.toString()),
+                              label: Text("Chef: $authorName"),
                               deleteIcon: const Icon(Icons.cancel, size: 20),
                               onDeleted: () {
                                 setState(() {
@@ -281,7 +299,7 @@ class RecipesPageState extends State<RecipesPage> {
                   ),
                 ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
+                height: MediaQuery.of(context).size.height,
                 child: RefreshIndicator(
                   onRefresh: () => fetchRecipes(
                     searchQuery: searchQuery,
@@ -305,9 +323,8 @@ class RecipesPageState extends State<RecipesPage> {
                           itemBuilder: (_, __) => const RecipeCardSkeleton(),
                         )
                       : recipes.isEmpty
-                          ? const Center(
-                              child: Text(
-                                  "No recipes found. Try another search or category."))
+                          ? Text(
+                              "No recipes found. Try another search or category.")
                           : GridView.builder(
                               padding: EdgeInsets.zero,
                               itemCount: recipes.length,
