@@ -6,11 +6,15 @@ import '../models/recipe.dart';
 
 class RecipeService {
   static Future<List<Recipe>> fetchRecipes(
-      {int? categoryId, String? searchQuery}) async {
+      {int? categoryId, String? searchQuery, int? authorId}) async {
     String url = ApiEndpoints.recipes;
 
     if (categoryId != null) {
       url += '&recipe-categories=$categoryId';
+    }
+
+    if (authorId != null) {
+      url += '&author=$authorId';
     }
 
     if (searchQuery != null && searchQuery.isNotEmpty) {

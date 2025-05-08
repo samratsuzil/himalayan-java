@@ -6,6 +6,7 @@ class ApiEndpoints {
   static const String media = '$baseUrl/media';
   static const String categories = '$baseUrl/categories';
 
-  static const String customAPIbaseUrl = 'https://project.astranix.com.np/v1';
+  static const String customAPIbaseUrl =
+      'https://project.astranix.com.np/wp-json/v1';
   static const String users = '$customAPIbaseUrl/users';
 }

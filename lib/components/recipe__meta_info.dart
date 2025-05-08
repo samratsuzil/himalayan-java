@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book/helpers/author_cache.dart';
-import 'package:recipe_book/models/user.dart'; // your User model
+import 'package:recipe_book/helpers/user_cache.dart';
+import 'package:recipe_book/models/user.dart';
+import 'package:recipe_book/pages/recipes_page.dart'; // your User model
 
 class RecipeMetaInfo extends StatelessWidget {
   final int authorId;
@@ -37,6 +38,29 @@ class RecipeMetaInfo extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(user.name,
                       style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Spacer(),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => RecipesPage(
+                                    authorId: authorId,
+                                  )));
+                    },
+                    child: Row(
+                      children: const [
+                        Text(
+                          "View more recipes from this author",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.teal,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             const SizedBox(height: 12),

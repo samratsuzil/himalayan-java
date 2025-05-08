@@ -43,13 +43,13 @@ class ProcedureTile extends StatelessWidget {
 
         final imageWidget = GestureDetector(
           onTap: () {
-            if (hasImage) _showFullImage(context, imageUrl!);
+            if (hasImage) _showFullImage(context, imageUrl);
           },
           child: ClipRRect(
               borderRadius: BorderRadius.circular(2),
               child: hasImage
                   ? Image.network(
-                      imageUrl!,
+                      imageUrl,
                       height: 40,
                       width: 80,
                       fit: BoxFit.cover,

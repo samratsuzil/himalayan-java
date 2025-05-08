@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_book/helpers/author_cache.dart';
+import 'package:recipe_book/helpers/user_cache.dart';
 
 class RecipeCard extends StatefulWidget {
   final String imageUrl;
@@ -37,7 +37,7 @@ class _RecipeCardState extends State<RecipeCard> {
       final author = await getUser(widget.author!);
       if (mounted) {
         setState(() {
-          authorName = author.name ?? 'Unknown';
+          authorName = author.name;
         });
       }
     }
