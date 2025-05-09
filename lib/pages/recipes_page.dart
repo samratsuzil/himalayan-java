@@ -27,8 +27,8 @@ class RecipesPageState extends State<RecipesPage> {
   bool isRecipeLoading = true;
   String searchQuery = "";
   int? selectedCategoryId;
-  String? authorName;
   int? localAuthorId; // Local variable to manage the authorId
+  User? author;
 
   @override
   void initState() {
@@ -38,16 +38,17 @@ class RecipesPageState extends State<RecipesPage> {
     fetchCategories();
     fetchRecipes(authorId: localAuthorId);
     if (localAuthorId != null) {
-      fetchAuthorName(localAuthorId!);
+      // fetchAuthorName(localAuthorId!);
+      fetchAuthor(localAuthorId!);
     }
   }
 
-  Future<void> fetchAuthorName(int authorId) async {
+  Future<void> fetchAuthor(int authorId) async {
     try {
-      final name = await UserService.fetchUserName(
+      final fetchedAuthor = await UserService.fetchUser(
           authorId); // Implement this method in RecipeService
       setState(() {
-        authorName = name;
+        author = fetchedAuthor;
       });
     } catch (e) {
       log('Error fetching author name: $e');
@@ -99,14 +100,28 @@ class RecipesPageState extends State<RecipesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            localAuthorId != null && authorName != null
-                ? "$authorName"
-                : 'Home',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            )),
+        title: Row(children: [
+          if (author != null)
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(author!.imageUrl),
+                  radius: 24,
+                  backgroundColor: Colors.grey[200],
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                Text(author!.name.toString()),
+              ],
+            )
+          else
+            Text('Home',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                )),
+        ]),
         backgroundColor: Colors.white,
         leading: ModalRoute.of(context)?.settings.name == '/home'
             ? null
@@ -219,9 +234,7 @@ class RecipesPageState extends State<RecipesPage> {
                     ),
               const SizedBox(height: 24),
               Text(
-                  localAuthorId != null && authorName != null
-                      ? "${authorName!}'s Recipes"
-                      : 'All Recipes',
+                  author != null ? "${author!.name!}'s Recipes" : 'All Recipes',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -229,7 +242,7 @@ class RecipesPageState extends State<RecipesPage> {
               const SizedBox(height: 12),
               if (searchQuery.isNotEmpty ||
                   selectedCategoryId != null ||
-                  authorName != null)
+                  author != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: SingleChildScrollView(
@@ -274,16 +287,15 @@ class RecipesPageState extends State<RecipesPage> {
                                   const EdgeInsets.symmetric(horizontal: 8),
                             ),
                           ),
-                        if (authorName != null)
+                        if (author != null)
                           Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: Chip(
-                              label: Text("Chef: $authorName"),
+                              label: Text("Chef: ${author!.name}"),
                               deleteIcon: const Icon(Icons.cancel, size: 20),
                               onDeleted: () {
                                 setState(() {
-                                  authorName = null;
-                                  localAuthorId = null; // Reset localAuthorId
+                                  author = null;
                                 });
                                 fetchRecipes(
                                     searchQuery: searchQuery,

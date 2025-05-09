@@ -29,26 +29,34 @@ class RecipeMetaInfo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (user != null)
-              InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => RecipesPage(
-                                  authorId: authorId,
-                                )));
-                  },
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(user.imageUrl),
-                        radius: 16,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(user.name,
-                          style: const TextStyle(fontWeight: FontWeight.w600)),
-                    ],
-                  )),
+              Row(
+                children: [
+                  Text('Recipe From:',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600, color: Colors.black)),
+                  Spacer(),
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(user.imageUrl),
+                    radius: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => RecipesPage(
+                                      authorId: authorId,
+                                    )));
+                      },
+                      child: Text(user.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black))),
+
+                  // Spacer(),
+                ],
+              ),
             const SizedBox(height: 12),
             SizedBox(
                 height: 140, // Adjust based on tile size

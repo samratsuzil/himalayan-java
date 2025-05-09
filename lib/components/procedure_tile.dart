@@ -46,22 +46,21 @@ class ProcedureTile extends StatelessWidget {
             if (hasImage) _showFullImage(context, imageUrl);
           },
           child: ClipRRect(
-              borderRadius: BorderRadius.circular(2),
-              child: hasImage
-                  ? Image.network(
-                      imageUrl,
-                      height: 40,
-                      width: 80,
-                      fit: BoxFit.cover,
-                    )
-                  : null
-              // Image.asset(
-              //     'assets/images/placeholder.jpg',
-              //     height: 40,
-              //     width: 40,
-              //     fit: BoxFit.cover,
-              //   ),
-              ),
+            borderRadius: BorderRadius.circular(2),
+            child: hasImage
+                ? Image.network(
+                    imageUrl,
+                    height: 40,
+                    width: 80,
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    'assets/images/placeholder.jpg',
+                    height: 40,
+                    width: 80,
+                    fit: BoxFit.cover,
+                  ),
+          ),
         );
 
         return Padding(
