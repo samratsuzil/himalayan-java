@@ -13,7 +13,7 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    log("JSON" + json.toString());
+    log("JSON$json");
     return User(
       id: json['id'] is int
           ? json['id']

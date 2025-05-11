@@ -33,7 +33,7 @@ class RecipeMetaInfo extends StatelessWidget {
                 children: [
                   Text('Recipe From:',
                       style: const TextStyle(
-                          fontWeight: FontWeight.w600, color: Colors.black)),
+                          fontWeight: FontWeight.w500, color: Colors.black)),
                   Spacer(),
                   CircleAvatar(
                     backgroundImage: NetworkImage(user.imageUrl),

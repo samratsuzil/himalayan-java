@@ -234,7 +234,7 @@ class RecipesPageState extends State<RecipesPage> {
                     ),
               const SizedBox(height: 24),
               Text(
-                  author != null ? "${author!.name!}'s Recipes" : 'All Recipes',
+                  author != null ? "${author!.name}'s Recipes" : 'All Recipes',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -311,7 +311,7 @@ class RecipesPageState extends State<RecipesPage> {
                   ),
                 ),
               SizedBox(
-                height: MediaQuery.of(context).size.height,
+                height: MediaQuery.of(context).size.height * 0.6,
                 child: RefreshIndicator(
                   onRefresh: () => fetchRecipes(
                     searchQuery: searchQuery,

@@ -17,6 +17,20 @@ class RecipeDetailPage extends StatelessWidget {
     List<Widget> ingredientWidgets = [];
     List<Widget> procedureWidgets = [];
 
+    List<IngredientItem> getFlatIngredientList(List<dynamic> ingredients) {
+      final List<IngredientItem> flatList = [];
+
+      for (final item in ingredients) {
+        if (item is IngredientItem) {
+          flatList.add(item);
+        } else if (item is IngredientGroup) {
+          flatList.addAll(item.items);
+        }
+      }
+
+      return flatList;
+    }
+
     for (final group in recipe.ingredients) {
       if (group is IngredientGroup) {
         ingredientWidgets.add(const SizedBox(height: 8));
@@ -29,13 +43,19 @@ class RecipeDetailPage extends StatelessWidget {
 
         for (final item in group.items) {
           ingredientWidgets.add(
-            IngredientTile(ingredient: item, index: ingredientIndex++),
+            IngredientTile(
+                ingredient: item,
+                index: ingredientIndex++,
+                allIngredients: getFlatIngredientList(
+                    recipe.ingredients) // You'll need to build this flat list
+                ),
           );
         }
       } else if (group is IngredientItem) {
-        ingredientWidgets.add(
-          IngredientTile(ingredient: group, index: ingredientIndex++),
-        );
+        ingredientWidgets.add(IngredientTile(
+            ingredient: group,
+            index: ingredientIndex++,
+            allIngredients: getFlatIngredientList(recipe.ingredients)));
       }
     }
 

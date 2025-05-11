@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_book/components/ingredient_image_gallery.dart';
 import 'package:recipe_book/models/models.dart';
 import 'package:recipe_book/helpers/fetch_media_url_helper.dart';
 
 class IngredientTile extends StatelessWidget {
   final IngredientItem ingredient;
   final int index;
+  final List<IngredientItem> allIngredients;
 
   const IngredientTile(
-      {super.key, required this.ingredient, required this.index});
+      {super.key,
+      required this.ingredient,
+      required this.index,
+      required this.allIngredients});
 
-  void _showFullImage(BuildContext context, String imageUrl) {
+  void _showFullImage(
+      BuildContext context, List<IngredientItem> ingredients, int startIndex) {
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.black54,
-        insetPadding: EdgeInsets.zero,
-        child: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: InteractiveViewer(
-            child: Center(
-              child: Image.network(imageUrl),
-            ),
-          ),
-        ),
+      builder: (_) => IngredientImageGallery(
+        ingredients: ingredients,
+        startIndex: startIndex,
       ),
     );
   }
@@ -40,7 +38,7 @@ class IngredientTile extends StatelessWidget {
 
         final imageWidget = GestureDetector(
           onTap: () {
-            if (hasImage) _showFullImage(context, imageUrl);
+            if (hasImage) _showFullImage(context, allIngredients, index);
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(2),
