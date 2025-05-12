@@ -25,8 +25,8 @@ class _IngredientImageGalleryState extends State<IngredientImageGallery> {
   @override
   void initState() {
     super.initState();
-    _controller = PageController(initialPage: widget.startIndex);
     _currentIndex = widget.startIndex;
+    _controller = PageController(initialPage: _currentIndex);
     _fetchAllImageUrls();
   }
 
@@ -40,11 +40,18 @@ class _IngredientImageGalleryState extends State<IngredientImageGallery> {
         }
       }),
     );
+    if (!mounted) return;
 
     setState(() {
       _imageUrls = results;
       _isLoading = false;
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override

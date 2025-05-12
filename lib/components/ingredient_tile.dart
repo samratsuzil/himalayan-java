@@ -21,7 +21,7 @@ class IngredientTile extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => IngredientImageGallery(
           ingredients: allIngredients,
-          startIndex: index,
+          startIndex: startIndex,
         ),
       ),
     );
@@ -37,31 +37,26 @@ class IngredientTile extends StatelessWidget {
         final imageUrl = snapshot.data;
         final hasImage = imageUrl != null && imageUrl.isNotEmpty;
 
-        final imageWidget = GestureDetector(
-          onTap: () {
-            if (hasImage) _showFullImage(context, allIngredients, index);
-          },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(2),
-            child: hasImage
-                ? Image.network(
-                    imageUrl,
-                    height: 40,
-                    width: 80,
-                    fit: BoxFit.cover,
-                  )
-                : Image.asset(
-                    'assets/images/placeholder.jpg',
-                    height: 40,
-                    width: 80,
-                    fit: BoxFit.cover,
-                  ),
-          ),
+        final imageWidget = ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: hasImage
+              ? Image.network(
+                  imageUrl,
+                  height: 40,
+                  width: 80,
+                  fit: BoxFit.cover,
+                )
+              : Image.asset(
+                  'assets/images/placeholder.jpg',
+                  height: 40,
+                  width: 80,
+                  fit: BoxFit.cover,
+                ),
         );
 
         return GestureDetector(
           onTap: () {
-            if (hasImage) _showFullImage(context, allIngredients, index);
+            _showFullImage(context, allIngredients, index - 1);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),

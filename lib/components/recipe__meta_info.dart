@@ -31,10 +31,10 @@ class RecipeMetaInfo extends StatelessWidget {
             if (user != null)
               Row(
                 children: [
-                  Text('Recipe From:',
+                  Text('By ',
                       style: const TextStyle(
                           fontWeight: FontWeight.w500, color: Colors.black)),
-                  Spacer(),
+
                   CircleAvatar(
                     backgroundImage: NetworkImage(user.imageUrl),
                     radius: 16,
