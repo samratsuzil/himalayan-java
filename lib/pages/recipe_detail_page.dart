@@ -31,6 +31,20 @@ class RecipeDetailPage extends StatelessWidget {
       return flatList;
     }
 
+    List<ProcedureStep> getFlatProceduresList(List<dynamic> procedures) {
+      final List<ProcedureStep> flatList = [];
+
+      for (final procedure in procedures) {
+        if (procedure is ProcedureStep) {
+          flatList.add(procedure);
+        } else if (procedure is ProcedureGroup) {
+          flatList.addAll(procedure.steps);
+        }
+      }
+
+      return flatList;
+    }
+
     for (final group in recipe.ingredients) {
       if (group is IngredientGroup) {
         ingredientWidgets.add(const SizedBox(height: 8));
@@ -46,9 +60,7 @@ class RecipeDetailPage extends StatelessWidget {
             IngredientTile(
                 ingredient: item,
                 index: ingredientIndex++,
-                allIngredients: getFlatIngredientList(
-                    recipe.ingredients) // You'll need to build this flat list
-                ),
+                allIngredients: getFlatIngredientList(recipe.ingredients)),
           );
         }
       } else if (group is IngredientItem) {
@@ -71,12 +83,19 @@ class RecipeDetailPage extends StatelessWidget {
 
         for (final step in group.steps) {
           procedureWidgets.add(
-            ProcedureTile(procedure: step, index: stepIndex++),
+            ProcedureTile(
+                procedure: step,
+                index: stepIndex++,
+                allProcedures: getFlatProceduresList(recipe.procedures)),
           );
         }
       } else if (group is ProcedureStep) {
         procedureWidgets.add(
-          ProcedureTile(procedure: group, index: stepIndex++),
+          ProcedureTile(
+            procedure: group,
+            index: stepIndex++,
+            allProcedures: getFlatProceduresList(recipe.procedures),
+          ),
         );
       }
     }
@@ -106,7 +125,7 @@ class RecipeDetailPage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        recipe.featuredImage ?? 'assets/placeholder.jpg',
+                        recipe.featuredImage ?? 'assets/images/placeholder.jpg',
                         fit: BoxFit.cover,
                         height: 200,
                         width: double.infinity,

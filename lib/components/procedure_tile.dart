@@ -1,31 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_book/components/procedure_image_gallery.dart';
 import 'package:recipe_book/models/models.dart';
 import 'package:recipe_book/helpers/fetch_media_url_helper.dart';
 
 class ProcedureTile extends StatelessWidget {
   final ProcedureStep procedure;
   final int index;
+  final List<ProcedureStep> allProcedures;
 
   const ProcedureTile({
     super.key,
     required this.procedure,
     required this.index,
+    required this.allProcedures,
   });
 
-  void _showFullImage(BuildContext context, String imageUrl) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.black54,
-        insetPadding: EdgeInsets.zero,
-        child: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: InteractiveViewer(
-            child: Center(
-              child: Image.network(imageUrl),
-            ),
-          ),
+  void _showFullImage(
+      BuildContext context, List<ProcedureStep> procedures, int startIndex) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProcedureImageGallery(
+          procedures: procedures,
+          startIndex: startIndex,
         ),
       ),
     );
@@ -41,54 +38,53 @@ class ProcedureTile extends StatelessWidget {
         final imageUrl = snapshot.data;
         final hasImage = imageUrl != null && imageUrl.isNotEmpty;
 
-        final imageWidget = GestureDetector(
-          onTap: () {
-            if (hasImage) _showFullImage(context, imageUrl);
-          },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(2),
-            child: hasImage
-                ? Image.network(
-                    imageUrl,
-                    height: 40,
-                    width: 80,
-                    fit: BoxFit.cover,
-                  )
-                : Image.asset(
-                    'assets/images/placeholder.jpg',
-                    height: 40,
-                    width: 80,
-                    fit: BoxFit.cover,
-                  ),
-          ),
+        final imageWidget = ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: hasImage
+              ? Image.network(
+                  imageUrl,
+                  height: 40,
+                  width: 80,
+                  fit: BoxFit.cover,
+                )
+              : Image.asset(
+                  'assets/images/placeholder.jpg',
+                  height: 40,
+                  width: 80,
+                  fit: BoxFit.cover,
+                ),
         );
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: 14,
-                backgroundColor: Colors.teal[50],
-                child: Text(
-                  '$index',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+        return GestureDetector(
+          onTap: () => _showFullImage(context, allProcedures, index - 1),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // keeps alignment steady
+              children: [
+                CircleAvatar(
+                  radius: 14,
+                  backgroundColor: Colors.teal[50],
+                  child: Text(
+                    '$index',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  procedure.description ?? '',
-                  style: const TextStyle(fontSize: 16),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    procedure.description ?? '',
+                    style: const TextStyle(fontSize: 16),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              imageWidget,
-            ],
+                const SizedBox(width: 12),
+                imageWidget,
+              ],
+            ),
           ),
         );
       },

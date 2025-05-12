@@ -18,107 +18,140 @@ class IngredientImageGallery extends StatefulWidget {
 
 class _IngredientImageGalleryState extends State<IngredientImageGallery> {
   late PageController _controller;
+  List<String?> _imageUrls = [];
+  bool _isLoading = true;
+  int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _controller = PageController(initialPage: widget.startIndex);
+    _currentIndex = widget.startIndex;
+    _fetchAllImageUrls();
+  }
+
+  Future<void> _fetchAllImageUrls() async {
+    final results = await Future.wait(
+      widget.ingredients.map((ingredient) async {
+        if (ingredient.image != null) {
+          return await fetchMediaUrl(ingredient.image!);
+        } else {
+          return null;
+        }
+      }),
+    );
+
+    setState(() {
+      _imageUrls = results;
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.black.withAlpha(255), // 50% transparent background
-      child: Stack(
-        children: [
-          PageView.builder(
-            controller: _controller,
-            itemCount: widget.ingredients.length,
-            itemBuilder: (context, index) {
-              final ingredient = widget.ingredients[index];
+    final height = MediaQuery.of(context).size.height;
 
-              return FutureBuilder<String?>(
-                future: ingredient.image != null
-                    ? fetchMediaUrl(ingredient.image!)
-                    : Future.value(null),
-                builder: (context, snapshot) {
-                  final imageUrl = snapshot.data;
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                const SizedBox(height: 40),
+                Row(
+                  children: [
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.close,
+                          color: Colors.white, size: 28),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Ingredient',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    CircleAvatar(
+                      backgroundColor: Colors.teal[50],
+                      child: Text(
+                        '${_currentIndex + 1}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Expanded(
+                  child: PageView.builder(
+                    controller: _controller,
+                    itemCount: widget.ingredients.length,
+                    onPageChanged: (index) =>
+                        setState(() => _currentIndex = index),
+                    itemBuilder: (context, index) {
+                      final ingredient = widget.ingredients[index];
+                      final imageUrl = _imageUrls[index];
 
-                  return GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          flex: 6,
-                          child: Center(
-                            child: imageUrl != null
-                                ? FadeInImage.assetNetwork(
-                                    placeholder:
-                                        'assets/images/placeholder.jpg',
-                                    image: imageUrl,
-                                    fit: BoxFit.contain,
-                                    placeholderFit: BoxFit.contain,
-                                    imageErrorBuilder: (_, __, ___) => Opacity(
-                                      opacity: 0.3,
-                                      child: Image.asset(
-                                        'assets/images/placeholder.jpg',
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: height / 3,
+                            width: double.infinity,
+                            child: imageUrl != null && imageUrl.isNotEmpty
+                                ? Image.network(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
                                   )
-                                : Opacity(
-                                    opacity: 0.3,
-                                    child: Image.asset(
-                                      'assets/images/placeholder.jpg',
-                                      fit: BoxFit.contain,
-                                    ),
+                                : Image.asset(
+                                    'assets/images/placeholder.jpg',
+                                    fit: BoxFit.cover,
                                   ),
                           ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: ListTile(
-                              tileColor: Colors.black,
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.teal[50],
-                                child: Text(
-                                  '${index + 1}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              color: Colors.black,
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 12),
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      child: Text(
+                                        '${ingredient.quantity} ${ingredient.unit} ${ingredient.name}',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              title: Text(
-                                '${ingredient.quantity} ${ingredient.unit} ${ingredient.name}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                ],
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-          Positioned(
-            top: 10,
-            right: 10,
-            child: IconButton(
-              icon: const Icon(Icons.close, color: Colors.white, size: 28),
-              onPressed: () => Navigator.pop(context),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
