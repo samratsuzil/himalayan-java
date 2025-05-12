@@ -16,12 +16,13 @@ class IngredientTile extends StatelessWidget {
 
   void _showFullImage(
       BuildContext context, List<IngredientItem> ingredients, int startIndex) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => IngredientImageGallery(
-        ingredients: ingredients,
-        startIndex: startIndex,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => IngredientImageGallery(
+          ingredients: allIngredients,
+          startIndex: index,
+        ),
       ),
     );
   }
@@ -58,32 +59,37 @@ class IngredientTile extends StatelessWidget {
           ),
         );
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: 14,
-                backgroundColor: Colors.teal[50],
-                child: Text(
-                  '$index',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+        return GestureDetector(
+          onTap: () {
+            if (hasImage) _showFullImage(context, allIngredients, index);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 14,
+                  backgroundColor: Colors.teal[50],
+                  child: Text(
+                    '$index',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  '${ingredient.quantity} ${ingredient.unit} ${ingredient.name}',
-                  style: const TextStyle(fontSize: 16),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '${ingredient.quantity} ${ingredient.unit} ${ingredient.name}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              imageWidget,
-            ],
+                const SizedBox(width: 12),
+                imageWidget,
+              ],
+            ),
           ),
         );
       },
