@@ -31,7 +31,7 @@ class RecipeMetaInfo extends StatelessWidget {
             if (user != null)
               Row(
                 children: [
-                  Text('By ',
+                  Text('By s',
                       style: const TextStyle(
                           fontWeight: FontWeight.w500, color: Colors.black)),
 

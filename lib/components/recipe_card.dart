@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:recipe_book/helpers/user_cache.dart';
+
+// Thumbnail size for decode (16:9) — smaller = faster load & less memory
+const int _kCacheWidth = 400;
+const int _kCacheHeight = 225;
 
 class RecipeCard extends StatefulWidget {
   final String imageUrl;
@@ -45,20 +50,32 @@ class _RecipeCardState extends State<RecipeCard> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+    return RepaintBoundary(
+        child: ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: Stack(
         children: [
           AspectRatio(
             aspectRatio: 16 / 9,
-            child: Image.network(
-              widget.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Image.asset(
-                'assets/iamges/placeholder.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
+            child: widget.imageUrl.isEmpty
+                ? Image.asset(
+                    'assets/images/placeholder.jpg',
+                    fit: BoxFit.cover,
+                  )
+                : CachedNetworkImage(
+                    imageUrl: widget.imageUrl,
+                    fit: BoxFit.cover,
+                    memCacheWidth: _kCacheWidth,
+                    memCacheHeight: _kCacheHeight,
+                    placeholder: (_, __) => Image.asset(
+                      'assets/images/placeholder.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                    errorWidget: (_, __, ___) => Image.asset(
+                      'assets/images/placeholder.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
           ),
           Positioned.fill(
             child: Container(
@@ -142,6 +159,6 @@ class _RecipeCardState extends State<RecipeCard> {
           ),
         ],
       ),
-    );
+    ));
   }
 }
