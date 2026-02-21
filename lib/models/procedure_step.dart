@@ -1,3 +1,5 @@
+import 'package:recipe_book/helpers/parse_media_id.dart';
+
 class ProcedureStep {
   final String? description;
   final int? image;
@@ -7,7 +9,7 @@ class ProcedureStep {
   factory ProcedureStep.fromJson(Map<String, dynamic> json) {
     return ProcedureStep(
       description: json['description'] ?? '',
-      image: json['image'] is int ? json['image'] : null,
+      image: parseMediaId(json['image']),
     );
   }
 

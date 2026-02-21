@@ -1,3 +1,5 @@
+import 'package:recipe_book/helpers/parse_media_id.dart';
+
 class IngredientItem {
   final String name;
   final String unit;
@@ -16,7 +18,7 @@ class IngredientItem {
       name: json['name'] ?? '',
       unit: json['unit'] ?? '',
       quantity: (json['quantity'] ?? 0).toDouble(),
-      image: json['image'] is int ? json['image'] : null,
+      image: parseMediaId(json['image']),
     );
   }
 

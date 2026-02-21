@@ -149,7 +149,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.recipe.featuredImage ?? ''),
+              
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: (widget.recipe.featuredImage == null ||
