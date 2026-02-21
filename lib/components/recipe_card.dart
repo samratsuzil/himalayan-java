@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_book/helpers/user_cache.dart';
 
+// Thumbnail size for decode (16:9) — smaller = faster load & less memory
+const int _kCacheWidth = 400;
+const int _kCacheHeight = 225;
+
 class RecipeCard extends StatefulWidget {
   final String imageUrl;
   final String title;
@@ -45,7 +49,8 @@ class _RecipeCardState extends State<RecipeCard> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+    return RepaintBoundary(
+        child: ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: Stack(
         children: [
@@ -55,7 +60,7 @@ class _RecipeCardState extends State<RecipeCard> {
               widget.imageUrl,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => Image.asset(
-                'assets/images/placeholder.jpg',
+                'assets/iamges/placeholder.jpg',
                 fit: BoxFit.cover,
               ),
             ),
@@ -142,6 +147,6 @@ class _RecipeCardState extends State<RecipeCard> {
           ),
         ],
       ),
-    );
+    ));
   }
 }

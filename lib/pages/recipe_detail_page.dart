@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:recipe_book/components/recipe__meta_info.dart';
 import 'package:recipe_book/models/models.dart';
 import 'package:recipe_book/components/ingredient_tile.dart';
@@ -148,15 +149,35 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(widget.recipe.featuredImage ?? ''),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    widget.recipe.featuredImage ??
-                        'assets/images/placeholder.jpg',
-                    fit: BoxFit.cover,
-                    height: 200,
-                    width: double.infinity,
-                  ),
+                  child: (widget.recipe.featuredImage == null ||
+                          widget.recipe.featuredImage!.isEmpty)
+                      ? Image.asset(
+                          'assets/images/placeholder.jpg',
+                          fit: BoxFit.cover,
+                          height: 200,
+                          width: double.infinity,
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: widget.recipe.featuredImage!,
+                          fit: BoxFit.cover,
+                          height: 200,
+                          width: double.infinity,
+                          placeholder: (_, __) => Image.asset(
+                            'assets/images/placeholder.jpg',
+                            fit: BoxFit.cover,
+                            height: 200,
+                            width: double.infinity,
+                          ),
+                          errorWidget: (_, __, ___) => Image.asset(
+                            'assets/images/placeholder.jpg',
+                            fit: BoxFit.cover,
+                            height: 200,
+                            width: double.infinity,
+                          ),
+                        ),
                 ),
                 const SizedBox(height: 16),
                 RecipeMetaInfo(
