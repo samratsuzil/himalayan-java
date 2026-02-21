@@ -45,35 +45,53 @@ class Recipe {
 
     List<dynamic> parsedIngredients = [];
     for (var ingredient in ingredientsJson) {
+      if (ingredient is! Map<String, dynamic>) continue;
       if (ingredient.containsKey('sub_ingredients')) {
         parsedIngredients.add(IngredientGroup.fromJson(ingredient));
       } else {
-        parsedIngredients
-            .add(IngredientItem.fromJson(ingredient['ingredient']));
+        final single = ingredient['ingredient'];
+        if (single is Map<String, dynamic>) {
+          parsedIngredients.add(IngredientItem.fromJson(single));
+        }
       }
     }
 
     List<dynamic> parsedProcedures = [];
     for (var procedure in proceduresJson) {
+      if (procedure is! Map<String, dynamic>) continue;
       if (procedure.containsKey('sub_procedure')) {
         parsedProcedures.add(ProcedureGroup.fromJson(procedure));
       } else {
-        parsedProcedures.add(ProcedureStep.fromJson(procedure['procedure']));
+        final single = procedure['procedure'];
+        if (single is Map<String, dynamic>) {
+          parsedProcedures.add(ProcedureStep.fromJson(single));
+        }
       }
     }
 
+    final titleObj = json['title'];
+    final titleStr = titleObj is Map ? (titleObj['rendered'] ?? '') : '';
+    final authorVal = json['author'];
+    final authorId = authorVal is int
+        ? authorVal
+        : (int.tryParse(authorVal?.toString() ?? '') ?? 0);
+
     return Recipe(
-        name: HtmlUnescape().convert(json['title']['rendered'] ?? ''),
-        servings: info['number_of_servings'] ?? 0,
-        calories: info['recipe_calories'] ?? 0,
-        difficulty: info['recipe_difficulty'] ?? '',
-        videoUrl: info['preparation_video'] ?? '',
+        name: HtmlUnescape().convert(titleStr),
+        servings: (info['number_of_servings'] ?? 0) is int
+            ? (info['number_of_servings'] as int)
+            : (int.tryParse((info['number_of_servings'] ?? 0).toString()) ?? 0),
+        calories: (info['recipe_calories'] ?? 0) is int
+            ? (info['recipe_calories'] as int)
+            : (int.tryParse((info['recipe_calories'] ?? 0).toString()) ?? 0),
+        difficulty: info['recipe_difficulty']?.toString() ?? '',
+        videoUrl: info['preparation_video']?.toString() ?? '',
         ingredients: parsedIngredients,
         procedures: parsedProcedures,
         prepTime:
-            '${time['preparation_time']} ${time['preparation_time_unit']}',
-        cookTime: '${time['cook_time']}${time['cook_time_unit']}',
+            '${time['preparation_time'] ?? ''} ${time['preparation_time_unit'] ?? ''}',
+        cookTime: '${time['cook_time'] ?? ''}${time['cook_time_unit'] ?? ''}',
         featuredImage: imageUrl,
-        author: json['author']);
+        author: authorId);
   }
 }

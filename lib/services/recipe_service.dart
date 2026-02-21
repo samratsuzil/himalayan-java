@@ -27,10 +27,19 @@ class RecipeService {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-
-      return data
-          .map((item) => Recipe.fromJson(item as Map<String, dynamic>))
-          .toList();
+      final List<Recipe> results = [];
+      for (var i = 0; i < data.length; i++) {
+        try {
+          final item = data[i];
+          if (item is Map<String, dynamic>) {
+            results.add(Recipe.fromJson(item));
+          }
+        } catch (e, st) {
+          log('Error parsing recipe at index $i: $e');
+          log('$st');
+        }
+      }
+      return results;
     } else {
       throw Exception('Failed to load recipes: ${response.statusCode}');
     }

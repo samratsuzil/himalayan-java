@@ -157,6 +157,7 @@ class _IngredientImageGalleryState extends State<IngredientImageGallery> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       const SizedBox(height: 12),
+                                      Text(imageUrl.toString()),
                                       Expanded(
                                         child: SingleChildScrollView(
                                           child: Text(

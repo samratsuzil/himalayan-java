@@ -55,7 +55,7 @@ class _RecipeCardState extends State<RecipeCard> {
               widget.imageUrl,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => Image.asset(
-                'assets/iamges/placeholder.jpg',
+                'assets/images/placeholder.jpg',
                 fit: BoxFit.cover,
               ),
             ),
