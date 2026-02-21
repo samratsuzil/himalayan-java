@@ -31,9 +31,10 @@ class RecipeMetaInfo extends StatelessWidget {
             if (user != null)
               Row(
                 children: [
-                  Text('By s',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w500, color: Colors.black)),
+                  Text('By ',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87)),
 
                   CircleAvatar(
                     backgroundImage: NetworkImage(user.imageUrl),
@@ -69,9 +70,9 @@ class RecipeMetaInfo extends StatelessWidget {
                   crossAxisSpacing: 8,
                   children: [
                     _buildInfoTile('🔥 Calories', '$calories kcal'),
-                    _buildInfoTile('🧩 Difficulty', difficulty),
-                    _buildInfoTile('⏱ Preparation', prepTime.toString()),
-                    _buildInfoTile('🍳 Cooking', cookTime.toString()),
+                    _buildInfoTile('🧩 Difficulty', difficulty.isNotEmpty ? difficulty : '—'),
+                    _buildInfoTile('⏱ Preparation', (prepTime != null && prepTime!.trim().isNotEmpty) ? prepTime! : '—'),
+                    _buildInfoTile('🍳 Cooking', (cookTime != null && cookTime!.trim().isNotEmpty) ? cookTime! : '—'),
                   ],
                 )),
           ],

@@ -248,7 +248,10 @@ class RecipesPageState extends State<RecipesPage> {
               }),
             if (author != null)
               _buildFilterChip("Chef: ${author!.name}", () {
-                setState(() => author = null);
+                setState(() {
+                  author = null;
+                  localAuthorId = null;
+                });
                 fetchRecipes(
                     searchQuery: searchQuery, categoryId: selectedCategoryId);
               }),
@@ -314,7 +317,8 @@ class RecipesPageState extends State<RecipesPage> {
             mainAxisSize: MainAxisSize.max,
             children: [
               RecipeCard(
-                imageUrl: recipe.featuredImage ?? '',
+                imageUrl:
+                    recipe.featuredImageSmall ?? recipe.featuredImage ?? '',
                 title: recipe.name,
                 author: recipe.author,
               ),

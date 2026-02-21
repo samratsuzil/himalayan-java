@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:recipe_book/components/ingredient_image_gallery.dart';
 import 'package:recipe_book/models/models.dart';
 import 'package:recipe_book/helpers/fetch_media_url_helper.dart';
@@ -40,11 +41,24 @@ class IngredientTile extends StatelessWidget {
         final imageWidget = ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: hasImage
-              ? Image.network(
-                  imageUrl,
+              ? CachedNetworkImage(
+                  imageUrl: imageUrl,
                   height: 40,
                   width: 80,
                   fit: BoxFit.cover,
+                  placeholder: (context, url) => Image.asset(
+                    'assets/images/placeholder.jpg',
+                    height: 40,
+                    width: 80,
+                    fit: BoxFit.cover,
+                  ),
+                  errorWidget: (context, url, error) => Image.asset(
+                    'assets/images/placeholder.jpg',
+                    height: 40,
+                    width: 80,
+                    fit: BoxFit.cover,
+                  ),
+                  memCacheWidth: 160,
                 )
               : Image.asset(
                   'assets/images/placeholder.jpg',

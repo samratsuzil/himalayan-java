@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:recipe_book/helpers/fetch_media_url_helper.dart';
 import 'package:recipe_book/models/ingredient_item.dart';
 
@@ -68,9 +69,18 @@ class _IngredientImageGalleryState extends State<IngredientImageGallery> {
                 Positioned.fill(
                   child: _imageUrls[_currentIndex] != null &&
                           _imageUrls[_currentIndex]!.isNotEmpty
-                      ? Image.network(
-                          _imageUrls[_currentIndex]!,
+                      ? CachedNetworkImage(
+                          imageUrl: _imageUrls[_currentIndex]!,
                           fit: BoxFit.cover,
+                          placeholder: (context, url) => Image.asset(
+                            'assets/images/placeholder.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                          errorWidget: (context, url, error) => Image.asset(
+                            'assets/images/placeholder.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                          memCacheWidth: 800,
                         )
                       : Image.asset(
                           'assets/images/placeholder.jpg',
@@ -139,9 +149,20 @@ class _IngredientImageGalleryState extends State<IngredientImageGallery> {
                                 height: height / 3,
                                 width: double.infinity,
                                 child: imageUrl != null && imageUrl.isNotEmpty
-                                    ? Image.network(
-                                        imageUrl,
+                                    ? CachedNetworkImage(
+                                        imageUrl: imageUrl,
                                         fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            Image.asset(
+                                          'assets/images/placeholder.jpg',
+                                          fit: BoxFit.cover,
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            Image.asset(
+                                          'assets/images/placeholder.jpg',
+                                          fit: BoxFit.cover,
+                                        ),
+                                        memCacheWidth: 800,
                                       )
                                     : Image.asset(
                                         'assets/images/placeholder.jpg',

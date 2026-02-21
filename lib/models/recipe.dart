@@ -10,6 +10,7 @@ class Recipe {
   final List<dynamic> ingredients;
   final List<dynamic> procedures;
   final String? featuredImage;
+  final String? featuredImageSmall;
   final int author;
   final String? prepTime;
   final String? cookTime;
@@ -23,6 +24,7 @@ class Recipe {
       required this.ingredients,
       required this.procedures,
       this.featuredImage,
+      this.featuredImageSmall,
       required this.author,
       this.prepTime,
       this.cookTime});
@@ -33,11 +35,42 @@ class Recipe {
 
     final info = acf['info'] ?? {};
     final embedded = json['_embedded'] ?? {};
-    String? imageUrl;
+    String? imageUrlLarge;
+    String? imageUrlSmall;
 
     if (embedded['wp:featuredmedia'] != null &&
         embedded['wp:featuredmedia'].isNotEmpty) {
-      imageUrl = embedded['wp:featuredmedia'][0]['source_url'];
+      final media = embedded['wp:featuredmedia'][0];
+      if (media is Map<String, dynamic>) {
+        final details = media['media_details'];
+        final sizes = details is Map<String, dynamic> ? details['sizes'] : null;
+
+        String? pickSize(Map<String, dynamic> sizeMap, List<String> keys) {
+          for (final key in keys) {
+            final entry = sizeMap[key];
+            if (entry is Map<String, dynamic>) {
+              final url = entry['source_url']?.toString();
+              if (url != null && url.isNotEmpty) return url;
+            }
+          }
+          return null;
+        }
+
+        if (sizes is Map<String, dynamic>) {
+          imageUrlLarge = pickSize(
+            sizes,
+            const ['medium_large', 'large', 'full'],
+          );
+          imageUrlSmall = pickSize(
+            sizes,
+            const ['medium', 'thumbnail', 'medium_large'],
+          );
+        }
+
+        final fallbackUrl = media['source_url']?.toString();
+        imageUrlLarge ??= fallbackUrl;
+        imageUrlSmall ??= fallbackUrl;
+      }
     }
 
     final ingredientsJson = acf['ingredients'] ?? [];
@@ -91,7 +124,8 @@ class Recipe {
         prepTime:
             '${time['preparation_time'] ?? ''} ${time['preparation_time_unit'] ?? ''}',
         cookTime: '${time['cook_time'] ?? ''}${time['cook_time_unit'] ?? ''}',
-        featuredImage: imageUrl,
+        featuredImage: imageUrlLarge,
+        featuredImageSmall: imageUrlSmall,
         author: authorId);
   }
 }

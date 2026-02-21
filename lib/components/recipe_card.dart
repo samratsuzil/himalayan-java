@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:recipe_book/helpers/user_cache.dart';
-
-// Thumbnail size for decode (16:9) — smaller = faster load & less memory
-const int _kCacheWidth = 400;
-const int _kCacheHeight = 225;
 
 class RecipeCard extends StatefulWidget {
   final String imageUrl;
@@ -56,14 +53,24 @@ class _RecipeCardState extends State<RecipeCard> {
         children: [
           AspectRatio(
             aspectRatio: 16 / 9,
-            child: Image.network(
-              widget.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Image.asset(
-                'assets/iamges/placeholder.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
+            child: widget.imageUrl.isEmpty
+                ? Image.asset(
+                    'assets/images/placeholder.jpg',
+                    fit: BoxFit.cover,
+                  )
+                : CachedNetworkImage(
+                    imageUrl: widget.imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Image.asset(
+                      'assets/images/placeholder.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                    errorWidget: (context, url, error) => Image.asset(
+                      'assets/images/placeholder.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                    memCacheWidth: 400,
+                  ),
           ),
           Positioned.fill(
             child: Container(
