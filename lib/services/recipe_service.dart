@@ -44,4 +44,21 @@ class RecipeService {
       throw Exception('Failed to load recipes: ${response.statusCode}');
     }
   }
+
+  static Future<Recipe> fetchRecipeById(int id) async {
+    final url = '${ApiEndpoints.baseUrl}/recipes/$id/?_embed';
+    log('Fetching recipe detail from: $url');
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data is Map<String, dynamic>) {
+        return Recipe.fromJson(data);
+      }
+      throw Exception('Unexpected recipe response format');
+    } else {
+      throw Exception('Failed to load recipe $id: ${response.statusCode}');
+    }
+  }
 }

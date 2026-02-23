@@ -9,4 +9,8 @@ class ApiEndpoints {
   static const String customAPIbaseUrl =
       'https://project.astranix.com.np/wp-json/v1';
   static const String users = '$customAPIbaseUrl/users';
+
+  /// Register FCM token so WordPress/backend can send push notifications.
+  /// Implement this endpoint on your backend to store the token.
+  static const String registerFcmToken = '$customAPIbaseUrl/register-fcm-token';
 }
